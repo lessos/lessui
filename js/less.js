@@ -1,6 +1,16 @@
 
-var lessModalData    = {};
-var lessModalCurrent = null;
+function lessAlert(obj, type, msg)
+{    
+    if (type == "") {
+        $(obj).hide();
+    } else {
+        $(obj).removeClass().addClass("alert "+ type).html(msg).show();
+    }
+}
+
+
+var lessModalData        = {};
+var lessModalCurrent     = null;
 var lessModalNextHistory = null;
 var lessModalBodyWidth   = null;
 var lessModalBodyHeight  = null;
@@ -96,7 +106,7 @@ function lessModalOpen(url, pos, w, h, title, opt)
                 
                 apd += '<div class="less-modal-header">\
                 <span class="title">'+title+'</span>\
-                <button class="close" onclick="lessModalClose()">脳</button>\
+                <button class="close" onclick="lessModalClose()">×</button>\
                 </div>';
                 
                 apd += '<div class="less-modal-body">';
@@ -222,6 +232,11 @@ function lessModalResize()
     $('.less-modal-body-pagelet').height(lessModalBodyHeight);
 }
 
+function lessModalScrollTop()
+{
+    $(".less_gen_scroll").scrollTop(0);
+}
+
 function lessModalButtonAdd(id, title, func, style)
 {
     $(".less-modal-footer")
@@ -238,7 +253,6 @@ function lessModalButtonAdd(id, title, func, style)
 
 function lessModalClose()
 {    
-    //$(".less-modal").slideUp(150, function(){
     $(".less-modal").hide(150, function(){
         $(this).remove();
         $(".less-modal-bg").remove();
