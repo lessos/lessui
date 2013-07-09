@@ -119,7 +119,6 @@ function lessModalOpen(url, pos, w, h, title, opt)
                 $("body").append(apd);
             } else {
                 $(".less-modal-body-page").append(pl);
-                
             }
 
             $("#"+urid).css({
@@ -192,7 +191,8 @@ function lessModalOpen(url, pos, w, h, title, opt)
             
             if (!$('.less-modal-bg').is(':visible')) {
                 $(".less-modal-bg").remove();
-                $("body").append('<div class="less-modal-bg">');
+                $("body").append('<div class="less-modal-bg hide">');
+                $(".less-modal-bg").fadeIn(300);                
             }
             
             if (firstload) {
@@ -201,11 +201,11 @@ function lessModalOpen(url, pos, w, h, title, opt)
                     "top": t +'px',
                     "left": l +'px',
                 //}).hide().slideDown(200, function() {
-                }).hide().show(150, function() {
+                }).hide().show(200, function() {
                     lessModalResize();
                 });
             }
-            $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 200, function() {
+            $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 240, function() {
                 $(".less-modal-header .title").text(title);
                 $("#"+urid+" .inputfocus").focus();
 
@@ -252,15 +252,15 @@ function lessModalButtonAdd(id, title, func, style)
 }
 
 function lessModalClose()
-{    
-    $(".less-modal").hide(150, function(){
+{
+    $(".less-modal").hide(200, function(){
         $(this).remove();
-        $(".less-modal-bg").remove();
         lessModalData = {};
         lessModalCurrent = null;
         lessModalBodyWidth = null;
         lessModalBodyHeight = null;
     });
+    $(".less-modal-bg").fadeOut(200);
 }
 
 
