@@ -3,7 +3,7 @@ function lessAlert(obj, type, msg)
 {    
     if (type == "") {
         $(obj).hide();
-    } else {
+    } else {        
         $(obj).removeClass().addClass("alert "+ type).html(msg).show();
     }
 }
@@ -15,9 +15,14 @@ var lessModalNextHistory = null;
 var lessModalBodyWidth   = null;
 var lessModalBodyHeight  = null;
 
+function lessModalNextPost(url, title, opt, post)
+{
+    lessModalOpenRaw('POST', url, null, null, null, title, opt, post);
+}
+
 function lessModalNext(url, title, opt)
 {
-    lessModalOpen(url, null, null, null, title, opt)
+    lessModalOpen(url, null, null, null, title, opt);
 }
 
 function lessModalPrev()
@@ -64,7 +69,17 @@ function lessModalSwitch(urid)
     });
 }
 
+function lessModalOpenPost(url, pos, w, h, title, opt, post)
+{
+    lessModalOpenRaw('POST', url, pos, w, h, title, opt, post)
+}
+
 function lessModalOpen(url, pos, w, h, title, opt)
+{
+    lessModalOpenRaw('GET', url, pos, w, h, title, opt, "")
+}
+
+function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
 {
     var urid = Crypto.MD5("modal"+url);
 
@@ -81,8 +96,9 @@ function lessModalOpen(url, pos, w, h, title, opt)
     
     $.ajax({
         url     : urls,
-        type    : "GET",
+        type    : method,
         timeout : 30000,
+        data    : post,
         success : function(rsp) {
 
             var firstload = false;
@@ -97,26 +113,29 @@ function lessModalOpen(url, pos, w, h, title, opt)
                 "title":    title,
                 "btns":     {},
             }
-            $(".less-modal-footer").empty();            
+            $(".less-modal-footer").empty();
 
             var pl = '<div class="less-modal-body-pagelet less_gen_scroll" id="'+urid+'">'+rsp+'</div>';
             
             if (firstload) {
+                
                 var apd = '<div class="less-modal">';
                 
                 apd += '<div class="less-modal-header">\
-                <span class="title">'+title+'</span>\
-                <button class="close" onclick="lessModalClose()">×</button>\
-                </div>';
-                
+                    <span class="title">'+title+'</span>\
+                    <button class="close" onclick="lessModalClose()">×</button>\
+                    </div>';
+
                 apd += '<div class="less-modal-body">';
                 apd += '<div class="less-modal-body-page">'+pl+'</div>';
                 apd += '</div>';
                 
                 apd += '<div class="less-modal-footer"><div>';
+                
                 apd += '</div>'
 
                 $("body").append(apd);
+                
             } else {
                 $(".less-modal-body-page").append(pl);
             }
