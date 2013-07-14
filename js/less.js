@@ -4,7 +4,7 @@ function lessAlert(obj, type, msg)
     if (type == "") {
         $(obj).hide();
     } else {
-        $(obj).removeClass().addClass("alert "+ type).html(msg).hide(300).show(100);
+        $(obj).removeClass().addClass("alert "+ type).html(msg).fadeOut(200).fadeIn(200);
     }
 }
 
