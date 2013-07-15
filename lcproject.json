@@ -2,9 +2,9 @@
   "projid":"lessui",
   "name":"Less UI Library",
   "summary":"Less UI. Common Library of Javascript, CSS, Image",
-  "version":"1.0.0",
+  "version":"1.0.1",
   "release":"1dev",
   "depends":"",
   "types": "webstatic",
-  "arch":"all",
+  "arch":"all"
 }
