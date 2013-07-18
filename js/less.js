@@ -258,8 +258,10 @@ function lessModalScrollTop()
 
 function lessModalButtonAdd(id, title, func, style)
 {
+    lessModalButtonClean(id);
+
     $(".less-modal-footer")
-        .append("<button class='btn btn-small "+style+"' onclick='"+func+"'>"+ title +"</button>")
+        .append("<button id='"+ lessModalCurrent + id +"' class='btn btn-small "+style+"' onclick='"+func+"'>"+ title +"</button>")
         .show(0, function() {
             lessModalResize();
             lessModalData[lessModalCurrent].btns[id] = {
@@ -269,6 +271,19 @@ function lessModalButtonAdd(id, title, func, style)
             }
         });
 }
+
+function lessModalButtonClean(id)
+{
+    $("#"+ lessModalCurrent + id).remove();
+}
+
+function lessModalButtonCleanAll()
+{
+    $(".less-modal-footer button").each(function(index) {
+        $(this).remove();
+    });
+}
+
 
 function lessModalClose()
 {
@@ -317,9 +332,9 @@ function lessCookieGet(key)
     var keyEQ = key + "=";
     var ca = document.cookie.split(';');
     
-    for(var i = 0; i < ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') 
+        while (c.charAt(0) == ' ')
             c = c.substring(1, c.length);
         if (c.indexOf(keyEQ) == 0) 
             return c.substring(keyEQ.length, c.length);
@@ -333,21 +348,61 @@ function lessCookieDel(key)
     lessCookieSet(key, "", -1);
 }
 
-
 var lessSession = {};
+lessSession.Set = function(key, val)
+{
+    sessionStorage.setItem(key, val);
+}
+lessSession.Get = function(key)
+{
+    return sessionStorage.getItem(key);
+}
+lessSession.Del = function(key)
+{
+    sessionStorage.removeItem(key);
+}
 lessSession.DelByPrefix = function(prefix)
 {
     var prelen = prefix.length;
     var qs = {};
-    
+
     for (var i = 0, len = sessionStorage.length; i < len; i++) {
         if (sessionStorage.key(i).slice(0, prelen) == prefix) {
             qs[i] = sessionStorage.key(i);
         }
     }
-    
+
     for (var i in qs) {
         sessionStorage.removeItem(qs[i]);
+    }
+}
+
+var lessLocalStorage = {};
+lessLocalStorage.Set = function(key, val)
+{
+    localStorage.setItem(key, val);
+}
+lessLocalStorage.Get = function(key)
+{
+    return localStorage.getItem(key);
+}
+lessLocalStorage.Del = function(key)
+{
+    localStorage.removeItem(key);
+}
+lessLocalStorage.DelByPrefix = function(prefix)
+{
+    var prelen = prefix.length;
+    var qs = {};
+
+    for (var i = 0, len = localStorage.length; i < len; i++) {
+        if (localStorage.key(i).slice(0, prelen) == prefix) {
+            qs[i] = localStorage.key(i);
+        }
+    }
+
+    for (var i in qs) {
+        localStorage.removeItem(qs[i]);
     }
 }
 
@@ -477,6 +532,7 @@ function lessCryptoMd5(str)
         S44 = 21;
 
     var utf8_encode = function (string) {
+
         string = string.replace(/\r\n/g,"\n");
         var utftext = "";
  
@@ -495,8 +551,7 @@ function lessCryptoMd5(str)
                 utftext += String.fromCharCode((c >> 12) | 224);
                 utftext += String.fromCharCode(((c >> 6) & 63) | 128);
                 utftext += String.fromCharCode((c & 63) | 128);
-            }
- 
+            } 
         }
  
         return utftext;
