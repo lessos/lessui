@@ -115,7 +115,7 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
             }
             $(".less-modal-footer").empty();
 
-            var pl = '<div class="less-modal-body-pagelet less_gen_scroll" id="'+urid+'">'+rsp+'</div>';
+            var pl = '<div class="less-modal-body-pagelet less_scroll" id="'+urid+'">'+rsp+'</div>';
             
             if (firstload) {
                 
@@ -211,7 +211,7 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
             if (!$('.less-modal-bg').is(':visible')) {
                 $(".less-modal-bg").remove();
                 $("body").append('<div class="less-modal-bg hide">');
-                $(".less-modal-bg").fadeIn(300);                
+                $(".less-modal-bg").fadeIn(150);                
             }
             
             if (firstload) {
@@ -220,7 +220,7 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
                     "top": t +'px',
                     "left": l +'px',
                 //}).hide().slideDown(200, function() {
-                }).hide().show(200, function() {
+                }).hide().show(100, function() {
                     lessModalResize();
                 });
             }
@@ -253,7 +253,7 @@ function lessModalResize()
 
 function lessModalScrollTop()
 {
-    $(".less_gen_scroll").scrollTop(0);
+    $(".less_scroll").scrollTop(0);
 }
 
 function lessModalButtonAdd(id, title, func, style)
@@ -287,14 +287,14 @@ function lessModalButtonCleanAll()
 
 function lessModalClose()
 {
-    $(".less-modal").hide(200, function(){
+    $(".less-modal").hide(100, function(){
         $(this).remove();
         lessModalData = {};
         lessModalCurrent = null;
         lessModalBodyWidth = null;
         lessModalBodyHeight = null;
     });
-    $(".less-modal-bg").fadeOut(200);
+    $(".less-modal-bg").fadeOut(150);
 }
 
 
@@ -313,8 +313,8 @@ function lessPosGet()
     return pos;
 }
 
-
-function lessCookieSet(key, val, sec)
+var lessCookie = {};
+lessCookie.Set = function(key, val, sec)
 {
     var expires = "";
     
@@ -326,8 +326,11 @@ function lessCookieSet(key, val, sec)
     
     document.cookie = key + "=" + val + expires + "; path=/";
 }
-
-function lessCookieGet(key)
+lessCookie.SetByDay = function(key, val, day)
+{
+    lessCookie.Set(key, val, day * 86400);
+}
+lessCookie.Get = function(key)
 {
     var keyEQ = key + "=";
     var ca = document.cookie.split(';');
@@ -342,11 +345,11 @@ function lessCookieGet(key)
     
     return null;
 }
-
-function lessCookieDel(key)
+lessCookie.Del = function(key)
 {
-    lessCookieSet(key, "", -1);
+    lessCookie.Set(key, "", -1);
 }
+
 
 var lessSession = {};
 lessSession.Set = function(key, val)
