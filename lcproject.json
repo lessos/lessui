@@ -3,8 +3,6 @@
   "name":"Less UI Library",
   "summary":"Less UI. Common Library of Javascript, CSS, Image",
   "version":"1.0.1",
-  "release":"1dev",
   "depends":"",
-  "types": "webstatic",
-  "arch":"all"
+  "types":"webstatic"
 }
