@@ -236,7 +236,7 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
             });
         },
         error: function(xhr, textStatus, error) {
-            hdev_header_alert('error', xhr.responseText);
+            // TODO hdev_header_alert('error', xhr.responseText);
         }
     });
 }
