@@ -25,16 +25,26 @@ function lessModalNext(url, title, opt)
     lessModalOpen(url, null, null, null, title, opt);
 }
 
-function lessModalPrev()
+function lessModalPrevId()
 {
     var prev = null;
     for (var i in lessModalData) {
+        
         if (lessModalData[i].urid == lessModalCurrent && prev != null) {
-            lessModalNextHistory = lessModalCurrent;
-            lessModalSwitch(prev);            
-            break;
+            return prev;
         }
         prev = i;
+    }
+
+    return null;
+}
+
+function lessModalPrev()
+{
+    var prev = lessModalPrevId();
+    if (prev != null) {
+        lessModalNextHistory = lessModalCurrent;
+        lessModalSwitch(prev); 
     }
 }
 
