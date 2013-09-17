@@ -3,6 +3,7 @@
   "name":"Less UI Library",
   "summary":"Less UI. Common Library of Javascript, CSS, Image",
   "version":"0.1.1.dev",
+  "props_dev": "60",
   "depends":"",
   "release":"1"
 }
