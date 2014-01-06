@@ -1,0 +1,26 @@
+.less_scroll {
+
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: 10px; height: 10px; background-color: transparent;
+        background-color: #ccc;
+    }
+    &::-webkit-scrollbar-corner {
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-button:start:decrement,
+    &::-webkit-scrollbar-button:end:increment {
+        display: none;
+    }
+    &::-webkit-scrollbar-thumb:vertical,
+    &::-webkit-scrollbar-thumb:horizontal {
+        background-color: #999;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #666;
+    }
+    &::-webkit-scrollbar-thumb:active {
+        background-color: #444;
+    }
+}
