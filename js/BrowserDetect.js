@@ -123,10 +123,10 @@ function isValidBrowser()
 {
     var browser = BrowserDetect.browser;
     var version = BrowserDetect.version;
-    var OS = BrowserDetect.OS;
-    //console.log(browser+','+version+','+OS);    
+    var OS      = BrowserDetect.OS;
+    
     return (
-        (browser == 'Chrome' && version >= 6) ||
+        (browser == 'Chrome' && version >= 20) ||
         (browser == 'Firefox' && version >= 3.6) ||
         (browser == 'Safari' && version >= 5.0 && OS == 'Mac')
     );
