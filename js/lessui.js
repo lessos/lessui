@@ -101,9 +101,9 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
     urls += Math.random();
 
     var p  = lessPosGet();
-    var bw = $('body').width() - 60;
-    var bh = $('body').height() - 50;
-    
+    var bw = $(window).width();
+    var bh = $(window).height();
+
     $.ajax({
         url     : urls,
         type    : method,
