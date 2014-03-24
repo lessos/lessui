@@ -220,7 +220,7 @@ function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
             
             if (!$('.less-modal-bg').is(':visible')) {
                 $(".less-modal-bg").remove();
-                $("body").append('<div class="less-modal-bg hide">');
+                $("body").append('<div class="less-modal-bg less-hide"></div>');
                 $(".less-modal-bg").fadeIn(150);                
             }
             

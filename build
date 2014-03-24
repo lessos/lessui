@@ -2,6 +2,7 @@
 
 <?php
 
+date_default_timezone_set("Asia/Shanghai");
 
 if (!file_exists("lcproject.json")) {
     die("lcproject.json does not exist");
