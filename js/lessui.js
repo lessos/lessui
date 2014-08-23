@@ -35,7 +35,7 @@ lessModal.Open = function(options)
     if (options.id !== undefined) {
         modalid = options.id;
     }
-    $("#"+modalid).remove();
+    $("#"+ modalid).remove();
 
     // console.log("current"+ this.current);
     if (this.current == null) {
@@ -106,9 +106,36 @@ lessModal.Open = function(options)
             var tempFn = doT.template(source);
             body += tempFn(options.data);
         } else {
-            body += source
+            body += source;
         }
-    }
+
+    } else if (options.tpluri !== undefined) {
+        
+        if (/\?/.test(options.tpluri)) {
+            options.tpluri += "&_=";
+        } else {
+            options.tpluri += "?_=";
+        }
+        options.tpluri += Math.random();
+
+        $.ajax({
+            url     : options.tpluri,
+            type    : "GET",
+            timeout : 10000,
+            async   : false,
+            success : function(rsp) {
+                if (options.data !== undefined) {
+                    var tempFn = doT.template(rsp);
+                    body += tempFn(options.data);
+                } else {
+                    body += rsp;
+                }
+            },
+            error : function() {
+                body += "Failed on load template";
+            }
+        });
+    }    
     body += "</div>";
 
     $("#less-modal-body-page").append(body);
@@ -201,15 +228,6 @@ lessModal.Open = function(options)
         lessModal.Resize();
         options.success();
     });
-
-    
-    // $("#"+ modalid).css({
-    //     "z-index" : 100,
-    //     "top"     : top +'px',
-    //     "left"    : left +'px',
-    // }).hide().show(100, function() {
-    //     // lessModalResize();
-    // });
 }
 
 lessModal.Resize = function()
@@ -805,6 +823,20 @@ lessTemplate.RenderFromId = function(idto, idfrom, data)
     // if (elemto) {
     //     elemto.innerHTML = tempFn(data);
     // }
+}
+
+lessTemplate.RenderById = function(idfrom, data)
+{
+    // TODO cache
+    var elem = document.getElementById(idfrom);
+    if (!elem) {
+        return "";
+    }
+
+    var source = elem.value || elem.innerHTML;    
+    var tempFn = doT.template(source);
+
+    return tempFn(data);
 }
 
 
