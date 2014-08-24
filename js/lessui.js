@@ -10,9 +10,10 @@ function lessAlert(obj, type, msg)
 
 // Modal Version 2.x
 var lessModal = {
-    version : "2.0",
-    current : null,
-    data    : {}
+    version     : "2.0",
+    current     : null,
+    nextHistory : null,
+    data        : {}
 };
 
 lessModal.Open = function(options)
@@ -22,7 +23,7 @@ lessModal.Open = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-        
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -31,14 +32,48 @@ lessModal.Open = function(options)
         options.position = "center";
     }
 
-    var modalid = "less-modal-single";
-    if (options.id !== undefined) {
-        modalid = options.id;
+    if (options.id === undefined) {
+        options.id = "less-modal-single";
     }
-    $("#"+ modalid).remove();
 
-    // console.log("current"+ this.current);
-    if (this.current == null) {
+    // $("#"+ modalid).remove();
+
+    if (options.backEnable === undefined) {
+        options.backEnable = true;
+    }
+
+    if (lessModal.current != null && options.backEnable) {
+        
+        options.prevModalId = lessModal.current;
+
+        lessModal.data[lessModal.current].nextModalId = options.id;
+
+        options.buttons.unshift({
+            onclick : "lessModal.Prev()",
+            title   : "Back",
+            style   : "btn-default less-pull-left"
+        });
+    }
+
+    lessModal.data[options.id] = options;
+
+    lessModal.switch(options.id);
+}
+
+lessModal.switch = function(modalid)
+{
+    var options = lessModal.data[modalid];
+    if (options.id === undefined) {
+        return;
+    }
+
+    if (lessModal.current == null) {
+        $("#"+ modalid).remove();
+    }
+
+    var firstload = false;
+    if (lessModal.current == null) {
+
         $(".less-modal").remove();
         $("body").append('<div class="less-modal">\
             <div class="less-modal-header hide">\
@@ -48,97 +83,75 @@ lessModal.Open = function(options)
             <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
             <div class="less-modal-footer hide"><div>\
             </div>');
+    
+        firstload = true;
+    
     } else {
         $(".less-modal-footer").empty();
-        // $(".less-modal-footer button").each(function(index) {
-        //     $(this).remove();
-        // });
     }
-    this.current = modalid;
 
-    if (options.header_title !== undefined) {
-        $("#less-modal-header-title").text(options.header_title);
-        // body = '<div class="less-modal-header">\
-        //     <span class="title">'+ options.header_title +'</span>\
-        //     <button class="close" onclick="lessModal.Close()">×</button>\
-        //     </div>';
+    if (options.title !== undefined) {
         $(".less-modal-header").css({"display" : "block"});
     } else {
         $(".less-modal-header").css({"display" : "none"});
     }
 
-    var buttons = "";
-    if (options.buttons !== undefined) {
-        for (var i in options.buttons) {
-            
-            if (options.buttons[i].onclick === undefined 
-                || options.buttons[i].title === undefined) {
-                continue;
-            }
-
-            if (options.buttons[i].style === undefined) {
-                options.buttons[i].style = "btn-default";
-            }            
-
-            buttons += "<button class='btn btn-small "+ options.buttons[i].style 
-                + "' onclick='"+options.buttons[i].onclick +"'>"
-                + options.buttons[i].title +"</button>";
-        }
-    }
-
+    var buttons = lessModal.buttonRender(options.buttons);
     if (buttons.length > 10) {
-        $(".less-modal-footer").append(buttons);
-        $(".less-modal-footer").show();
+        $(".less-modal-footer").css({"display": "inline-block"});
     }
 
-    var body = "<div id='"+ modalid +"' class='less-modal-body-pagelet less_scroll'>";
-    if (options.tplid !== undefined) {
+    if (!document.getElementById(modalid)) {
+    
+        var body = "<div id='"+ modalid +"' class='less-modal-body-pagelet less_scroll'>";
+        if (options.tplid !== undefined) {
 
-        var elem = document.getElementById(options.tplid);
-        if (!elem) {
-            return "";
-        }
-
-        var source = elem.value || elem.innerHTML;    
-
-        if (options.data !== undefined) {
-            // console.log(source);
-            var tempFn = doT.template(source);
-            body += tempFn(options.data);
-        } else {
-            body += source;
-        }
-
-    } else if (options.tpluri !== undefined) {
-        
-        if (/\?/.test(options.tpluri)) {
-            options.tpluri += "&_=";
-        } else {
-            options.tpluri += "?_=";
-        }
-        options.tpluri += Math.random();
-
-        $.ajax({
-            url     : options.tpluri,
-            type    : "GET",
-            timeout : 10000,
-            async   : false,
-            success : function(rsp) {
-                if (options.data !== undefined) {
-                    var tempFn = doT.template(rsp);
-                    body += tempFn(options.data);
-                } else {
-                    body += rsp;
-                }
-            },
-            error : function() {
-                body += "Failed on load template";
+            var elem = document.getElementById(options.tplid);
+            if (!elem) {
+                return "";
             }
-        });
-    }    
-    body += "</div>";
 
-    $("#less-modal-body-page").append(body);
+            var source = elem.value || elem.innerHTML;    
+
+            if (options.data !== undefined) {
+                // console.log(source);
+                var tempFn = doT.template(source);
+                body += tempFn(options.data);
+            } else {
+                body += source;
+            }
+
+        } else if (options.tpluri !== undefined) {
+            
+            if (/\?/.test(options.tpluri)) {
+                options.tpluri += "&_=";
+            } else {
+                options.tpluri += "?_=";
+            }
+            options.tpluri += Math.random();
+
+            $.ajax({
+                url     : options.tpluri,
+                type    : "GET",
+                timeout : 10000,
+                async   : false,
+                success : function(rsp) {
+                    // console.log(rsp);
+                    if (options.data !== undefined) {
+                        var tempFn = doT.template(rsp);
+                        body += tempFn(options.data);
+                    } else {
+                        body += rsp;
+                    }
+                },
+                error : function() {
+                    body += "Failed on load template";
+                }
+            });
+        }    
+        body += "</div>";
+        $("#less-modal-body-page").append(body);
+    }
 
     $("#"+ modalid).css({
         "z-index" : "-100",
@@ -162,8 +175,6 @@ lessModal.Open = function(options)
     options.width = parseInt(options.width);
     options.height = parseInt(options.height);
 
-    // var hh = $('.less-modal-header').outerHeight(true);
-    // var fh = $('.less-modal-footer').outerHeight(true);
     var inlet_height = $('.less-modal-header').outerHeight(true) + $('.less-modal-footer').outerHeight(true) + 10;
 
     if (options.width < 1) {
@@ -179,8 +190,6 @@ lessModal.Open = function(options)
         options.height = 100;
     }
 
-    var p  = lessPosGet();
-    
     var bw = $(window).width(), bh = $(window).height();
     var top = 0, left = 0;
 
@@ -188,8 +197,8 @@ lessModal.Open = function(options)
         left = bw / 2 - options.width / 2;
         top = bh / 2 - options.height / 2;
     } else {
-        left = p.left;
-        top = p.top;
+        var p = lessPosGet();
+        top = p.top, left = p.left;
     }
     if (left > (bw - options.width)) {
         left = bw - options.width;
@@ -220,24 +229,123 @@ lessModal.Open = function(options)
         "height"    : (options.height - inlet_height) +"px"
     });
 
-    $(".less-modal").css({
-        "z-index"   : 100,
-        "top"       : top +'px',
-        "left"      : left +'px'
-    }).hide().show(100, function() {
+    var pp = $("#"+ modalid).position();
+    var mov = pp.left;
+    if (mov < 0) {
+        mov = 0;
+    }
+
+    if (firstload) {
+        
+        $(".less-modal").css({
+            "z-index"   : 100,
+            "top"       : top +'px',
+            "left"      : left +'px'
+        }).hide().show(100, function() {
+            // lessModal.Resize();
+            // options.success();
+        });
+
+        if (options.title !== undefined) {
+            $(".less-modal-header .title").text(options.title);
+        }
+
+        if (buttons.length > 10) {
+            $(".less-modal-footer").html(buttons);
+        }
+
+    } else {
+
+        $(".less-modal").animate({
+            "z-index"   : 100,
+            "top"       : top +'px',
+            "left"      : left +'px'
+        }, 200, function() {
+            // lessModal.Resize();
+            // options.success();
+        });
+    }
+
+    $('.less-modal-body-page').animate({
+        top: 0,
+        left: "-"+ mov +"px"
+    }, 300, function() {
+
+        if (!firstload) {
+
+            if (options.title !== undefined) {
+                $(".less-modal-header .title").text(options.title);
+            }
+
+            if (buttons.length > 10) {
+                $(".less-modal-footer").html(buttons);
+            }
+        }
+
+        $("#"+ modalid+" .inputfocus").focus();
+
         lessModal.Resize();
         options.success();
     });
+
+    lessModal.current = options.id;
+    
+    if (options.nextModalId !== undefined) {
+        delete lessModal.data[options.nextModalId];
+        $("#"+ options.nextModalId).remove();
+        lessModal.data[options.id].nextModalId = undefined;
+    }
+}
+
+lessModal.PrevId = function()
+{
+    var modal = lessModal.data[lessModal.current];
+    if (modal.prevModalId !== undefined) {
+        return modal.prevModalId;
+    }
+    return null;
+}
+
+lessModal.Prev = function()
+{
+    var previd = lessModal.PrevId();
+    if (previd != null) {
+        // lessModal.nextHistory = lessModal.current;
+        lessModal.switch(previd); 
+    }
+}
+
+
+lessModal.buttonRender = function(buttons)
+{
+    var str = "";
+    for (var i in buttons) {
+
+        if (buttons[i].onclick === undefined 
+            || buttons[i].title === undefined) {
+            continue;
+        }
+
+        if (buttons[i].style === undefined) {
+            buttons[i].style = "btn-default";
+        }
+
+        str += "<button class='btn btn-small "+ buttons[i].style 
+            + "' onclick='"+buttons[i].onclick +"'>"
+            + buttons[i].title +"</button>";
+    }
+
+    return str;
 }
 
 lessModal.Resize = function()
 {
-    var h  = $('.less-modal').height();
-    var hh = $('.less-modal-header').outerHeight(true);
-    var fh = $('.less-modal-footer').outerHeight(true);
+    var h  = $(".less-modal").height();
+    var hh = $(".less-modal-header").outerHeight(true);
+    var fh = $(".less-modal-footer").outerHeight(true);
     lessModalBodyHeight = h - hh - fh - 10;
-    $('.less-modal-body').height(lessModalBodyHeight);
-    $('.less-modal-body-pagelet').height(lessModalBodyHeight);
+    $(".less-modal-body").height(lessModalBodyHeight);
+    $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
 
 lessModal.Close = function()
@@ -251,6 +359,10 @@ lessModal.Close = function()
     $(".less-modal-bg").fadeOut(150);
 }
 
+lessModal.ScrollTop = function()
+{
+    $(".less-modal-body-pagelet.less_scroll").scrollTop(0);
+}
 
 
 var lessModalData        = {};
@@ -833,7 +945,7 @@ lessTemplate.RenderById = function(idfrom, data)
         return "";
     }
 
-    var source = elem.value || elem.innerHTML;    
+    var source = elem.value || elem.innerHTML;
     var tempFn = doT.template(source);
 
     return tempFn(data);
