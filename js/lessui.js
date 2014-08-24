@@ -951,6 +951,71 @@ lessTemplate.RenderById = function(idfrom, data)
     return tempFn(data);
 }
 
+lessTemplate.Render = function(options)
+{
+    options = options || {};
+
+    if (typeof options.success !== "function") {
+        options.success = function(){};
+    }
+        
+    if (typeof options.error !== "function") {
+        options.error = function(){};
+    }
+
+    if (options.dstid === undefined) {
+        options.error(400, "dstid can not be null");
+        return;
+    }
+
+    if (options.tplid !== undefined) {
+        
+        var elem = document.getElementById(options.tplid);
+        if (!elem) {
+        	options.error(400, "tplid can not found");
+            return;
+        }
+
+        var source = elem.value || elem.innerHTML;    
+
+        if (options.data !== undefined) {
+            var tempFn = doT.template(source);
+            $("#"+ options.dstid).html(tempFn(options.data));
+        } else {
+            $("#"+ options.dstid).html(source);
+        }
+
+    } else if (options.tplurl !== undefined) {
+
+        if (/\?/.test(options.tpluri)) {
+            options.tpluri += "&_=";
+        } else {
+            options.tpluri += "?_=";
+        }
+        options.tpluri += Math.random();
+    
+        $.ajax({
+            url     : options.tplurl,
+            type    : "GET",
+            timeout : 10000,
+            success : function(rsp) {
+    
+                if (options.data !== undefined) {
+                    var tempFn = doT.template(rsp);
+                    $("#"+ options.dstid).html(tempFn(options.data));
+                } else {
+                    $("#"+ options.dstid).html(rsp);
+                }
+    
+                options.success();
+            },
+            error : function() {
+                options.error(400, "tplurl can not fetch")
+            }
+        });
+    }
+}
+
 
 var lessPagelet = {};
 lessPagelet.Render = function(data, tpl, elemid)
