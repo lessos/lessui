@@ -1,3 +1,6 @@
+var l4i = {
+    //
+}
 
 function lessAlert(obj, type, msg)
 {
@@ -76,12 +79,12 @@ lessModal.switch = function(modalid)
 
         $(".less-modal").remove();
         $("body").append('<div class="less-modal">\
-            <div class="less-modal-header hide">\
+            <div class="less-modal-header" style="display:none">\
                 <span id="less-modal-header-title" class="title"></span>\
                 <button class="close" onclick="lessModal.Close()">×</button>\
             </div>\
             <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
-            <div class="less-modal-footer hide"><div>\
+            <div class="less-modal-footer" style="display:none"><div>\
             </div>');
     
         firstload = true;
@@ -1275,3 +1278,35 @@ function lessCryptoMd5(str)
     
     return temp.toLowerCase();
 }
+
+l4i.timeChars = {
+    // Year
+    Y: function() { return this.getFullYear(); },
+    // Month
+    m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
+    // Day
+    d: function() { return (this.getDate() < 10 ? '0' : '') + this.getDate(); },
+    // Hour
+    H: function() { return (this.getHours() < 10 ? '0' : '') + this.getHours(); },
+    // Minute
+    i: function() { return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes(); },
+    // Second
+    s: function() { return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds(); },
+    u: function() {
+        var m = this.getMilliseconds();
+        return (m < 10 ? '00' : (m < 100 ? '0' : '')) + m;
+    },
+}
+
+Date.prototype.l4iTimeFormat = function(format) {
+    var date = this;
+    return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
+        return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
+    });
+};
+
+l4i.TimeParseFormat = function(time, format)
+{
+    return (new Date(time)).l4iTimeFormat(format);
+};
+
