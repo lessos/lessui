@@ -77,8 +77,8 @@ lessModal.switch = function(modalid)
     var firstload = false;
     if (lessModal.current == null) {
 
-        $(".less-modal").remove();
-        $("body").append('<div class="less-modal">\
+        $("#l4i-modal").remove();
+        $("body").append('<div id="l4i-modal">\
             <div class="less-modal-header" style="display:none">\
                 <span id="less-modal-header-title" class="title"></span>\
                 <button class="close" onclick="lessModal.Close()">×</button>\
@@ -161,8 +161,8 @@ lessModal.switch = function(modalid)
         "display" : "block"
     });
 
-    if (!$('.less-modal').is(':visible')) {
-        $(".less-modal").css({
+    if (!$("#l4i-modal").is(':visible')) {
+        $("#l4i-modal").css({
             "z-index": "-100"
         }).show();
     }
@@ -213,22 +213,22 @@ lessModal.switch = function(modalid)
         top = 10;
     }
 
-    $(".less-modal").css({
+    $("#l4i-modal").css({
         "height": options.height +'px',
         "width": options.width +'px',
     });
 
     $(".less-modal-body").height(options.height - inlet_height);
 
-    if (!$('.less-modal-bg').is(':visible')) {
-        $(".less-modal-bg").remove();
-        $("body").append('<div class="less-modal-bg less-hide"></div>');
-        $(".less-modal-bg").fadeIn(150);                
+    if (!$('#l4i-modal-bg').is(':visible')) {
+        $("#l4i-modal-bg").remove();
+        $("body").append('<div id="l4i-modal-bg" class="less-hide"></div>');
+        $("#l4i-modal-bg").fadeIn(150);                
     }
 
     $("#"+ modalid).css({
         "z-index"   : 1,
-        "width"     : options.width +"px",
+        "width"     : $(".less-modal-body").width(), // options.width +"px",
         "height"    : (options.height - inlet_height) +"px"
     });
 
@@ -239,9 +239,9 @@ lessModal.switch = function(modalid)
     }
 
     if (firstload) {
-        
-        $(".less-modal").css({
-            "z-index"   : 100,
+
+        $("#l4i-modal").css({
+            "z-index"   : 200,
             "top"       : top +'px',
             "left"      : left +'px'
         }).hide().show(100, function() {
@@ -259,8 +259,8 @@ lessModal.switch = function(modalid)
 
     } else {
 
-        $(".less-modal").animate({
-            "z-index"   : 100,
+        $("#l4i-modal").animate({
+            "z-index"   : 200,
             "top"       : top +'px',
             "left"      : left +'px'
         }, 200, function() {
@@ -343,7 +343,7 @@ lessModal.buttonRender = function(buttons)
 
 lessModal.Resize = function()
 {
-    var h  = $(".less-modal").height();
+    var h  = $("#l4i-modal").height();
     var hh = $(".less-modal-header").outerHeight(true);
     var fh = $(".less-modal-footer").outerHeight(true);
     lessModalBodyHeight = h - hh - fh - 10;
@@ -353,13 +353,12 @@ lessModal.Resize = function()
 
 lessModal.Close = function()
 {
-    $(".less-modal").hide(100, function(){
-        $(this).remove();
+    $("#l4i-modal").hide(100, function() {
         lessModal.data = {};
-        lessModal.current = null;        
+        lessModal.current = null;
+        $("#l4i-modal").remove();
     });
-
-    $(".less-modal-bg").fadeOut(150);
+    $("#l4i-modal-bg").fadeOut(150); 
 }
 
 lessModal.ScrollTop = function()
@@ -1310,3 +1309,30 @@ l4i.TimeParseFormat = function(time, format)
     return (new Date(time)).l4iTimeFormat(format);
 };
 
+l4i.UriQuery = function ()
+{
+    // This function is anonymous, is executed immediately and 
+    // the return value is assigned to l4i.UriQuery!
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    
+    for (var i=0;i<vars.length;i++) {
+    
+        var pair = vars[i].split("=");
+    
+        // If first entry with this name
+        if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+        // If second entry with this name
+        } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+        // If third or later entry with this name
+        } else {
+            query_string[pair[0]].push(pair[1]);
+        }
+    } 
+    
+    return query_string;
+} ();
