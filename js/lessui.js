@@ -987,6 +987,8 @@ lessTemplate.Render = function(options)
             $("#"+ options.dstid).html(source);
         }
 
+        options.success();
+
     } else if (options.tplurl !== undefined) {
 
         if (/\?/.test(options.tpluri)) {
