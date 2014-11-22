@@ -15,7 +15,10 @@ function lessAlert(obj, type, msg)
 var lessModal = {
     version     : "2.0",
     current     : null,
+    CurOptions  : null,
     nextHistory : null,
+    width       : 600,
+    height      : 400,
     data        : {}
 };
 
@@ -54,7 +57,7 @@ lessModal.Open = function(options)
         options.buttons.unshift({
             onclick : "lessModal.Prev()",
             title   : "Back",
-            style   : "btn-default less-pull-left"
+            style   : "btn-primary less-pull-left"
         });
     }
 
@@ -168,11 +171,11 @@ lessModal.switch = function(modalid)
     }
 
     if (options.width === undefined) {
-        options.width = 400;
+        options.width = lessModal.width;
     }
 
     if (options.height === undefined) {
-        options.height = 200;
+        options.height = lessModal.height;
     }
 
     options.width = parseInt(options.width);
@@ -292,6 +295,9 @@ lessModal.switch = function(modalid)
     });
 
     lessModal.current = options.id;
+    lessModal.CurOptions = options;
+    lessModal.width = options.width;
+    lessModal.height = options.height;
     
     if (options.nextModalId !== undefined) {
         delete lessModal.data[options.nextModalId];
@@ -356,6 +362,7 @@ lessModal.Close = function()
     $("#l4i-modal").hide(100, function() {
         lessModal.data = {};
         lessModal.current = null;
+        lessModal.CurOptions = null;
         $("#l4i-modal").remove();
     });
     $("#l4i-modal-bg").fadeOut(150); 
