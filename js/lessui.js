@@ -1,3 +1,6 @@
+var l4i = {
+    //
+}
 
 function lessAlert(obj, type, msg)
 {
@@ -6,6 +9,361 @@ function lessAlert(obj, type, msg)
     } else {
         $(obj).removeClass().addClass("alert "+ type).html(msg).fadeOut(200).fadeIn(200);
     }
+}
+
+// Modal Version 2.x
+var lessModal = {
+    version     : "2.0",
+    current     : null,
+    nextHistory : null,
+    data        : {}
+};
+
+lessModal.Open = function(options)
+{
+    options = options || {};
+
+    if (typeof options.success !== "function") {
+        options.success = function(){};
+    }
+
+    if (typeof options.error !== "function") {
+        options.error = function(){};
+    }
+
+    if (options.position != "center" && options.position != "cursor") {
+        options.position = "center";
+    }
+
+    if (options.id === undefined) {
+        options.id = "less-modal-single";
+    }
+
+    // $("#"+ modalid).remove();
+
+    if (options.backEnable === undefined) {
+        options.backEnable = true;
+    }
+
+    if (lessModal.current != null && options.backEnable) {
+        
+        options.prevModalId = lessModal.current;
+
+        lessModal.data[lessModal.current].nextModalId = options.id;
+
+        options.buttons.unshift({
+            onclick : "lessModal.Prev()",
+            title   : "Back",
+            style   : "btn-default less-pull-left"
+        });
+    }
+
+    lessModal.data[options.id] = options;
+
+    lessModal.switch(options.id);
+}
+
+lessModal.switch = function(modalid)
+{
+    var options = lessModal.data[modalid];
+    if (options.id === undefined) {
+        return;
+    }
+
+    if (lessModal.current == null) {
+        $("#"+ modalid).remove();
+    }
+
+    var firstload = false;
+    if (lessModal.current == null) {
+
+        $("#l4i-modal").remove();
+        $("body").append('<div id="l4i-modal">\
+            <div class="less-modal-header" style="display:none">\
+                <span id="less-modal-header-title" class="title"></span>\
+                <button class="close" onclick="lessModal.Close()">×</button>\
+            </div>\
+            <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
+            <div class="less-modal-footer" style="display:none"><div>\
+            </div>');
+    
+        firstload = true;
+    
+    } else {
+        $(".less-modal-footer").empty();
+    }
+
+    if (options.title !== undefined) {
+        $(".less-modal-header").css({"display" : "block"});
+    } else {
+        $(".less-modal-header").css({"display" : "none"});
+    }
+
+    var buttons = lessModal.buttonRender(options.buttons);
+    if (buttons.length > 10) {
+        $(".less-modal-footer").css({"display": "inline-block"});
+    }
+
+    if (!document.getElementById(modalid)) {
+    
+        var body = "<div id='"+ modalid +"' class='less-modal-body-pagelet less_scroll'>";
+        if (options.tplid !== undefined) {
+
+            var elem = document.getElementById(options.tplid);
+            if (!elem) {
+                return "";
+            }
+
+            var source = elem.value || elem.innerHTML;    
+
+            if (options.data !== undefined) {
+                // console.log(source);
+                var tempFn = doT.template(source);
+                body += tempFn(options.data);
+            } else {
+                body += source;
+            }
+
+        } else if (options.tpluri !== undefined) {
+            
+            if (/\?/.test(options.tpluri)) {
+                options.tpluri += "&_=";
+            } else {
+                options.tpluri += "?_=";
+            }
+            options.tpluri += Math.random();
+
+            $.ajax({
+                url     : options.tpluri,
+                type    : "GET",
+                timeout : 10000,
+                async   : false,
+                success : function(rsp) {
+                    // console.log(rsp);
+                    if (options.data !== undefined) {
+                        var tempFn = doT.template(rsp);
+                        body += tempFn(options.data);
+                    } else {
+                        body += rsp;
+                    }
+                },
+                error : function() {
+                    body += "Failed on load template";
+                }
+            });
+        }    
+        body += "</div>";
+        $("#less-modal-body-page").append(body);
+    }
+
+    $("#"+ modalid).css({
+        "z-index" : "-100",
+        "display" : "block"
+    });
+
+    if (!$("#l4i-modal").is(':visible')) {
+        $("#l4i-modal").css({
+            "z-index": "-100"
+        }).show();
+    }
+
+    if (options.width === undefined) {
+        options.width = 400;
+    }
+
+    if (options.height === undefined) {
+        options.height = 200;
+    }
+
+    options.width = parseInt(options.width);
+    options.height = parseInt(options.height);
+
+    var inlet_height = $('.less-modal-header').outerHeight(true) + $('.less-modal-footer').outerHeight(true) + 10;
+
+    if (options.width < 1) {
+        options.width = $("#"+ modalid).outerWidth(true);
+    }
+    if (options.width < 200) {
+        options.width = 200;
+    }
+    if (options.height < 1) {
+        options.height = $("#"+ modalid).outerHeight(true) + inlet_height;
+    }
+    if (options.height < 100) {
+        options.height = 100;
+    }
+
+    var bw = $(window).width(), bh = $(window).height();
+    var top = 0, left = 0;
+
+    if (options.position == "center") {
+        left = bw / 2 - options.width / 2;
+        top = bh / 2 - options.height / 2;
+    } else {
+        var p = lessPosGet();
+        top = p.top, left = p.left;
+    }
+    if (left > (bw - options.width)) {
+        left = bw - options.width;
+    }
+    if ((top + options.height + 40) > bh) {
+        top = bh - options.height - 40;
+    }
+    if (top < 10) {
+        top = 10;
+    }
+
+    $("#l4i-modal").css({
+        "height": options.height +'px',
+        "width": options.width +'px',
+    });
+
+    $(".less-modal-body").height(options.height - inlet_height);
+
+    if (!$('#l4i-modal-bg').is(':visible')) {
+        $("#l4i-modal-bg").remove();
+        $("body").append('<div id="l4i-modal-bg" class="less-hide"></div>');
+        $("#l4i-modal-bg").fadeIn(150);                
+    }
+
+    $("#"+ modalid).css({
+        "z-index"   : 1,
+        "width"     : $(".less-modal-body").width(), // options.width +"px",
+        "height"    : (options.height - inlet_height) +"px"
+    });
+
+    var pp = $("#"+ modalid).position();
+    var mov = pp.left;
+    if (mov < 0) {
+        mov = 0;
+    }
+
+    if (firstload) {
+
+        $("#l4i-modal").css({
+            "z-index"   : 200,
+            "top"       : top +'px',
+            "left"      : left +'px'
+        }).hide().show(100, function() {
+            // lessModal.Resize();
+            // options.success();
+        });
+
+        if (options.title !== undefined) {
+            $(".less-modal-header .title").text(options.title);
+        }
+
+        if (buttons.length > 10) {
+            $(".less-modal-footer").html(buttons);
+        }
+
+    } else {
+
+        $("#l4i-modal").animate({
+            "z-index"   : 200,
+            "top"       : top +'px',
+            "left"      : left +'px'
+        }, 200, function() {
+            // lessModal.Resize();
+            // options.success();
+        });
+    }
+
+    $('.less-modal-body-page').animate({
+        top: 0,
+        left: "-"+ mov +"px"
+    }, 300, function() {
+
+        if (!firstload) {
+
+            if (options.title !== undefined) {
+                $(".less-modal-header .title").text(options.title);
+            }
+
+            if (buttons.length > 10) {
+                $(".less-modal-footer").html(buttons);
+            }
+        }
+
+        $("#"+ modalid+" .inputfocus").focus();
+
+        lessModal.Resize();
+        options.success();
+    });
+
+    lessModal.current = options.id;
+    
+    if (options.nextModalId !== undefined) {
+        delete lessModal.data[options.nextModalId];
+        $("#"+ options.nextModalId).remove();
+        lessModal.data[options.id].nextModalId = undefined;
+    }
+}
+
+lessModal.PrevId = function()
+{
+    var modal = lessModal.data[lessModal.current];
+    if (modal.prevModalId !== undefined) {
+        return modal.prevModalId;
+    }
+    return null;
+}
+
+lessModal.Prev = function()
+{
+    var previd = lessModal.PrevId();
+    if (previd != null) {
+        // lessModal.nextHistory = lessModal.current;
+        lessModal.switch(previd); 
+    }
+}
+
+
+lessModal.buttonRender = function(buttons)
+{
+    var str = "";
+    for (var i in buttons) {
+
+        if (buttons[i].onclick === undefined 
+            || buttons[i].title === undefined) {
+            continue;
+        }
+
+        if (buttons[i].style === undefined) {
+            buttons[i].style = "btn-default";
+        }
+
+        str += "<button class='btn btn-small "+ buttons[i].style 
+            + "' onclick='"+buttons[i].onclick +"'>"
+            + buttons[i].title +"</button>";
+    }
+
+    return str;
+}
+
+lessModal.Resize = function()
+{
+    var h  = $("#l4i-modal").height();
+    var hh = $(".less-modal-header").outerHeight(true);
+    var fh = $(".less-modal-footer").outerHeight(true);
+    lessModalBodyHeight = h - hh - fh - 10;
+    $(".less-modal-body").height(lessModalBodyHeight);
+    $(".less-modal-body-pagelet").height(lessModalBodyHeight);
+}
+
+lessModal.Close = function()
+{
+    $("#l4i-modal").hide(100, function() {
+        lessModal.data = {};
+        lessModal.current = null;
+        $("#l4i-modal").remove();
+    });
+    $("#l4i-modal-bg").fadeOut(150); 
+}
+
+lessModal.ScrollTop = function()
+{
+    $(".less-modal-body-pagelet.less_scroll").scrollTop(0);
 }
 
 
@@ -574,9 +932,91 @@ lessTemplate.RenderFromId = function(idto, idfrom, data)
     var source = elem.value || elem.innerHTML;    
     var tempFn = doT.template(source);
 
-    var elemto = document.getElementById(idto);
-    if (elemto) {
-        elemto.innerHTML = tempFn(data);
+    $("#"+ idto).html(tempFn(data));
+    // var elemto = document.getElementById(idto);
+    // if (elemto) {
+    //     elemto.innerHTML = tempFn(data);
+    // }
+}
+
+lessTemplate.RenderById = function(idfrom, data)
+{
+    // TODO cache
+    var elem = document.getElementById(idfrom);
+    if (!elem) {
+        return "";
+    }
+
+    var source = elem.value || elem.innerHTML;
+    var tempFn = doT.template(source);
+
+    return tempFn(data);
+}
+
+lessTemplate.Render = function(options)
+{
+    options = options || {};
+
+    if (typeof options.success !== "function") {
+        options.success = function(){};
+    }
+        
+    if (typeof options.error !== "function") {
+        options.error = function(){};
+    }
+
+    if (options.dstid === undefined) {
+        options.error(400, "dstid can not be null");
+        return;
+    }
+
+    if (options.tplid !== undefined) {
+        
+        var elem = document.getElementById(options.tplid);
+        if (!elem) {
+        	options.error(400, "tplid can not found");
+            return;
+        }
+
+        var source = elem.value || elem.innerHTML;    
+
+        if (options.data !== undefined) {
+            var tempFn = doT.template(source);
+            $("#"+ options.dstid).html(tempFn(options.data));
+        } else {
+            $("#"+ options.dstid).html(source);
+        }
+
+        options.success();
+
+    } else if (options.tplurl !== undefined) {
+
+        if (/\?/.test(options.tpluri)) {
+            options.tpluri += "&_=";
+        } else {
+            options.tpluri += "?_=";
+        }
+        options.tpluri += Math.random();
+    
+        $.ajax({
+            url     : options.tplurl,
+            type    : "GET",
+            timeout : 10000,
+            success : function(rsp) {
+    
+                if (options.data !== undefined) {
+                    var tempFn = doT.template(rsp);
+                    $("#"+ options.dstid).html(tempFn(options.data));
+                } else {
+                    $("#"+ options.dstid).html(rsp);
+                }
+    
+                options.success();
+            },
+            error : function() {
+                options.error(400, "tplurl can not fetch")
+            }
+        });
     }
 }
 
@@ -839,3 +1279,62 @@ function lessCryptoMd5(str)
     
     return temp.toLowerCase();
 }
+
+l4i.timeChars = {
+    // Year
+    Y: function() { return this.getFullYear(); },
+    // Month
+    m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
+    // Day
+    d: function() { return (this.getDate() < 10 ? '0' : '') + this.getDate(); },
+    // Hour
+    H: function() { return (this.getHours() < 10 ? '0' : '') + this.getHours(); },
+    // Minute
+    i: function() { return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes(); },
+    // Second
+    s: function() { return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds(); },
+    u: function() {
+        var m = this.getMilliseconds();
+        return (m < 10 ? '00' : (m < 100 ? '0' : '')) + m;
+    },
+}
+
+Date.prototype.l4iTimeFormat = function(format) {
+    var date = this;
+    return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
+        return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
+    });
+};
+
+l4i.TimeParseFormat = function(time, format)
+{
+    return (new Date(time)).l4iTimeFormat(format);
+};
+
+l4i.UriQuery = function ()
+{
+    // This function is anonymous, is executed immediately and 
+    // the return value is assigned to l4i.UriQuery!
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    
+    for (var i=0;i<vars.length;i++) {
+    
+        var pair = vars[i].split("=");
+    
+        // If first entry with this name
+        if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+        // If second entry with this name
+        } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+        // If third or later entry with this name
+        } else {
+            query_string[pair[0]].push(pair[1]);
+        }
+    } 
+    
+    return query_string;
+} ();
