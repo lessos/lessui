@@ -12,7 +12,7 @@ function lessAlert(obj, type, msg)
 }
 
 // Modal Version 2.x
-var lessModal = {
+var l4iModal = {
     version     : "2.0",
     current     : null,
     CurOptions  : null,
@@ -22,7 +22,7 @@ var lessModal = {
     data        : {}
 };
 
-lessModal.Open = function(options)
+l4iModal.Open = function(options)
 {
     options = options || {};
 
@@ -34,12 +34,22 @@ lessModal.Open = function(options)
         options.error = function(){};
     }
 
-    if (options.position != "center" && options.position != "cursor") {
+    if (!options.position) {
+        options.position = "center";
+    } else if (options.position != "center" && options.position != "cursor") {
         options.position = "center";
     }
 
     if (options.id === undefined) {
         options.id = "less-modal-single";
+    }
+
+    if (options.close === undefined) {
+        options.close = true;
+    }
+
+    if (options.buttons === undefined) {
+        options.buttons = [];
     }
 
     // $("#"+ modalid).remove();
@@ -48,43 +58,43 @@ lessModal.Open = function(options)
         options.backEnable = true;
     }
 
-    if (lessModal.current != null && options.backEnable) {
+    if (l4iModal.current != null && options.backEnable) {
         
-        options.prevModalId = lessModal.current;
+        options.prevModalId = l4iModal.current;
 
-        lessModal.data[lessModal.current].nextModalId = options.id;
+        l4iModal.data[l4iModal.current].nextModalId = options.id;
 
         options.buttons.unshift({
-            onclick : "lessModal.Prev()",
+            onclick : "l4iModal.Prev()",
             title   : "Back",
             style   : "btn-primary less-pull-left"
         });
     }
 
-    lessModal.data[options.id] = options;
+    l4iModal.data[options.id] = options;
 
-    lessModal.switch(options.id);
+    l4iModal.switch(options.id);
 }
 
-lessModal.switch = function(modalid)
+l4iModal.switch = function(modalid)
 {
-    var options = lessModal.data[modalid];
+    var options = l4iModal.data[modalid];
     if (options.id === undefined) {
         return;
     }
 
-    if (lessModal.current == null) {
+    if (l4iModal.current == null) {
         $("#"+ modalid).remove();
     }
 
     var firstload = false;
-    if (lessModal.current == null) {
+    if (l4iModal.current == null) {
 
         $("#l4i-modal").remove();
         $("body").append('<div id="l4i-modal">\
             <div class="less-modal-header" style="display:none">\
                 <span id="less-modal-header-title" class="title"></span>\
-                <button class="close" onclick="lessModal.Close()">×</button>\
+                <button class="close" onclick="l4iModal.Close()">×</button>\
             </div>\
             <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
             <div class="less-modal-footer" style="display:none"><div>\
@@ -102,7 +112,11 @@ lessModal.switch = function(modalid)
         $(".less-modal-header").css({"display" : "none"});
     }
 
-    var buttons = lessModal.buttonRender(options.buttons);
+    if (!options.close) {
+        $(".less-modal-header").find(".close").css({"display": "none"});
+    }
+
+    var buttons = l4iModal.buttonRender(options.buttons);
     if (buttons.length > 10) {
         $(".less-modal-footer").css({"display": "inline-block"});
     }
@@ -127,7 +141,7 @@ lessModal.switch = function(modalid)
                 return "";
             }
 
-            var source = elem.value || elem.innerHTML;    
+            var source = elem.value || elem.innerHTML;
 
             if (options.data !== undefined) {
                 // console.log(source);
@@ -182,11 +196,11 @@ lessModal.switch = function(modalid)
     }
 
     if (options.width === undefined) {
-        options.width = lessModal.width;
+        options.width = l4iModal.width;
     }
 
     if (options.height === undefined) {
-        options.height = lessModal.height;
+        options.height = l4iModal.height;
     }
 
     options.width = parseInt(options.width);
@@ -259,7 +273,7 @@ lessModal.switch = function(modalid)
             "top"       : top +'px',
             "left"      : left +'px'
         }).hide().show(50, function() {
-            // lessModal.Resize();
+            // l4iModal.Resize();
             // options.success();
         });
 
@@ -278,7 +292,7 @@ lessModal.switch = function(modalid)
             "top"       : top +'px',
             "left"      : left +'px'
         }, 50, function() {
-            // lessModal.Resize();
+            // l4iModal.Resize();
             // options.success();
         });
     }
@@ -301,42 +315,42 @@ lessModal.switch = function(modalid)
 
         $("#"+ modalid+" .inputfocus").focus();
 
-        lessModal.Resize();
+        l4iModal.Resize();
         options.success();
     });
 
-    lessModal.current = options.id;
-    lessModal.CurOptions = options;
-    lessModal.width = options.width;
-    lessModal.height = options.height;
+    l4iModal.current = options.id;
+    l4iModal.CurOptions = options;
+    l4iModal.width = options.width;
+    l4iModal.height = options.height;
     
     if (options.nextModalId !== undefined) {
-        delete lessModal.data[options.nextModalId];
+        delete l4iModal.data[options.nextModalId];
         $("#"+ options.nextModalId).remove();
-        lessModal.data[options.id].nextModalId = undefined;
+        l4iModal.data[options.id].nextModalId = undefined;
     }
 }
 
-lessModal.PrevId = function()
+l4iModal.PrevId = function()
 {
-    var modal = lessModal.data[lessModal.current];
+    var modal = l4iModal.data[l4iModal.current];
     if (modal.prevModalId !== undefined) {
         return modal.prevModalId;
     }
     return null;
 }
 
-lessModal.Prev = function()
+l4iModal.Prev = function()
 {
-    var previd = lessModal.PrevId();
+    var previd = l4iModal.PrevId();
     if (previd != null) {
-        // lessModal.nextHistory = lessModal.current;
-        lessModal.switch(previd); 
+        // l4iModal.nextHistory = l4iModal.current;
+        l4iModal.switch(previd); 
     }
 }
 
 
-lessModal.buttonRender = function(buttons)
+l4iModal.buttonRender = function(buttons)
 {
     var str = "";
     for (var i in buttons) {
@@ -358,7 +372,7 @@ lessModal.buttonRender = function(buttons)
     return str;
 }
 
-lessModal.Resize = function()
+l4iModal.Resize = function()
 {
     var h  = $("#l4i-modal").height();
     var hh = $(".less-modal-header").outerHeight(true);
@@ -368,320 +382,320 @@ lessModal.Resize = function()
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
 
-lessModal.Close = function()
+l4iModal.Close = function()
 {
     $("#l4i-modal").hide(100, function() {
-        lessModal.data = {};
-        lessModal.current = null;
-        lessModal.CurOptions = null;
+        l4iModal.data = {};
+        l4iModal.current = null;
+        l4iModal.CurOptions = null;
         $("#l4i-modal").remove();
     });
     $("#l4i-modal-bg").fadeOut(150); 
 }
 
-lessModal.ScrollTop = function()
+l4iModal.ScrollTop = function()
 {
     $(".less-modal-body-pagelet.less_scroll").scrollTop(0);
 }
 
 
-var lessModalData        = {};
-var lessModalCurrent     = null;
-var lessModalNextHistory = null;
-var lessModalBodyWidth   = null;
-var lessModalBodyHeight  = null;
+// var lessModalData        = {};
+// var lessModalCurrent     = null;
+// var lessModalNextHistory = null;
+// var lessModalBodyWidth   = null;
+// var lessModalBodyHeight  = null;
 
-function lessModalNextPost(url, title, opt, post)
-{
-    lessModalOpenRaw('POST', url, null, null, null, title, opt, post);
-}
+// function lessModalNextPost(url, title, opt, post)
+// {
+//     lessModalOpenRaw('POST', url, null, null, null, title, opt, post);
+// }
 
-function lessModalNext(url, title, opt)
-{
-    lessModalOpen(url, null, null, null, title, opt);
-}
+// function lessModalNext(url, title, opt)
+// {
+//     lessModalOpen(url, null, null, null, title, opt);
+// }
 
-function lessModalPrevId()
-{
-    var prev = null;
-    for (var i in lessModalData) {
+// function lessModalPrevId()
+// {
+//     var prev = null;
+//     for (var i in lessModalData) {
         
-        if (lessModalData[i].urid == lessModalCurrent && prev != null) {
-            return prev;
-        }
-        prev = i;
-    }
+//         if (lessModalData[i].urid == lessModalCurrent && prev != null) {
+//             return prev;
+//         }
+//         prev = i;
+//     }
 
-    return null;
-}
+//     return null;
+// }
 
-function lessModalPrev()
-{
-    var prev = lessModalPrevId();
-    if (prev != null) {
-        lessModalNextHistory = lessModalCurrent;
-        lessModalSwitch(prev); 
-    }
-}
+// function lessModalPrev()
+// {
+//     var prev = lessModalPrevId();
+//     if (prev != null) {
+//         lessModalNextHistory = lessModalCurrent;
+//         lessModalSwitch(prev); 
+//     }
+// }
 
-function lessModalSwitch(urid)
-{
-    if (!lessModalData[urid].title) {
-        return;
-    }
-    pp = $('#'+ urid).position();
-    mov = pp.left;
-    if (mov < 0) {
-        mov = 0;
-    }
-    $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 300, function() {
+// function lessModalSwitch(urid)
+// {
+//     if (!lessModalData[urid].title) {
+//         return;
+//     }
+//     pp = $('#'+ urid).position();
+//     mov = pp.left;
+//     if (mov < 0) {
+//         mov = 0;
+//     }
+//     $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 300, function() {
         
-        $('.less-modal-header .title').text(lessModalData[urid].title);
+//         $('.less-modal-header .title').text(lessModalData[urid].title);
     
-        $('.less-modal-footer').empty();
-        for (var i in lessModalData[urid].btns) {
-            lessModalButtonAdd(lessModalData[urid].btns[i].id, 
-                lessModalData[urid].btns[i].title,
-                lessModalData[urid].btns[i].func,
-                lessModalData[urid].btns[i].style);
-        }
-        lessModalCurrent = urid;
+//         $('.less-modal-footer').empty();
+//         for (var i in lessModalData[urid].btns) {
+//             lessModalButtonAdd(lessModalData[urid].btns[i].id, 
+//                 lessModalData[urid].btns[i].title,
+//                 lessModalData[urid].btns[i].func,
+//                 lessModalData[urid].btns[i].style);
+//         }
+//         lessModalCurrent = urid;
 
-        if (lessModalNextHistory != null) {
-            delete lessModalData[lessModalNextHistory];
-            $("#"+ lessModalNextHistory).remove();
-            lessModalNextHistory = null;
-        }
-    });
-}
+//         if (lessModalNextHistory != null) {
+//             delete lessModalData[lessModalNextHistory];
+//             $("#"+ lessModalNextHistory).remove();
+//             lessModalNextHistory = null;
+//         }
+//     });
+// }
 
-function lessModalOpenPost(url, pos, w, h, title, opt, post)
-{
-    lessModalOpenRaw('POST', url, pos, w, h, title, opt, post)
-}
+// function lessModalOpenPost(url, pos, w, h, title, opt, post)
+// {
+//     lessModalOpenRaw('POST', url, pos, w, h, title, opt, post)
+// }
 
-function lessModalOpen(url, pos, w, h, title, opt)
-{
-    lessModalOpenRaw('GET', url, pos, w, h, title, opt, "")
-}
+// function lessModalOpen(url, pos, w, h, title, opt)
+// {
+//     lessModalOpenRaw('GET', url, pos, w, h, title, opt, "")
+// }
 
-function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
-{
-    var urid = lessCryptoMd5("modal"+url);
+// function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
+// {
+//     var urid = lessCryptoMd5("modal"+url);
 
-    if (/\?/.test(url)) {
-        urls = url + "&_=";
-    } else {
-        urls = url + "?_=";
-    }
-    urls += Math.random();
+//     if (/\?/.test(url)) {
+//         urls = url + "&_=";
+//     } else {
+//         urls = url + "?_=";
+//     }
+//     urls += Math.random();
 
-    var p  = lessPosGet();
-    var bw = $(window).width();
-    var bh = $(window).height();
+//     var p  = lessPosGet();
+//     var bw = $(window).width();
+//     var bh = $(window).height();
 
-    $.ajax({
-        url     : urls,
-        type    : method,
-        timeout : 30000,
-        data    : post,
-        success : function(rsp) {
+//     $.ajax({
+//         url     : urls,
+//         type    : method,
+//         timeout : 30000,
+//         data    : post,
+//         success : function(rsp) {
 
-            var firstload = false;
-            if (lessModalCurrent == null) {
-                $(".less-modal").remove();
-                firstload = true;
-            }
-            lessModalCurrent = urid;
-            lessModalData[urid] = {
-                "urid":     urid,
-                "url":      url,
-                "title":    title,
-                "btns":     {},
-            }
-            $(".less-modal-footer").empty();
+//             var firstload = false;
+//             if (lessModalCurrent == null) {
+//                 $(".less-modal").remove();
+//                 firstload = true;
+//             }
+//             lessModalCurrent = urid;
+//             lessModalData[urid] = {
+//                 "urid":     urid,
+//                 "url":      url,
+//                 "title":    title,
+//                 "btns":     {},
+//             }
+//             $(".less-modal-footer").empty();
 
-            var pl = '<div class="less-modal-body-pagelet less_scroll" id="'+urid+'">'+rsp+'</div>';
+//             var pl = '<div class="less-modal-body-pagelet less_scroll" id="'+urid+'">'+rsp+'</div>';
             
-            if (firstload) {
+//             if (firstload) {
                 
-                var apd = '<div class="less-modal">';
+//                 var apd = '<div class="less-modal">';
                 
-                apd += '<div class="less-modal-header">\
-                    <span class="title">'+title+'</span>\
-                    <button class="close" onclick="lessModalClose()">×</button>\
-                    </div>';
+//                 apd += '<div class="less-modal-header">\
+//                     <span class="title">'+title+'</span>\
+//                     <button class="close" onclick="lessModalClose()">×</button>\
+//                     </div>';
 
-                apd += '<div class="less-modal-body">';
-                apd += '<div class="less-modal-body-page">'+pl+'</div>';
-                apd += '</div>';
+//                 apd += '<div class="less-modal-body">';
+//                 apd += '<div class="less-modal-body-page">'+pl+'</div>';
+//                 apd += '</div>';
                 
-                apd += '<div class="less-modal-footer"><div>';
+//                 apd += '<div class="less-modal-footer"><div>';
                 
-                apd += '</div>'
+//                 apd += '</div>'
 
-                $("body").append(apd);
+//                 $("body").append(apd);
                 
-            } else {
-                $(".less-modal-body-page").append(pl);
-            }
+//             } else {
+//                 $(".less-modal-body-page").append(pl);
+//             }
 
-            $("#"+urid).css({
-                "z-index": "-100"
-            }).show();
+//             $("#"+urid).css({
+//                 "z-index": "-100"
+//             }).show();
 
-            if (!$('.less-modal').is(':visible')) {
-                $(".less-modal").css({
-                    "z-index": "-100"
-                }).show();
-            }
+//             if (!$('.less-modal').is(':visible')) {
+//                 $(".less-modal").css({
+//                     "z-index": "-100"
+//                 }).show();
+//             }
                 
-            if (firstload) {
+//             if (firstload) {
 
-                var hh = $('.less-modal-header').outerHeight(true);
-                var fh = $('.less-modal-footer').outerHeight(true);
+//                 var hh = $('.less-modal-header').outerHeight(true);
+//                 var fh = $('.less-modal-footer').outerHeight(true);
                 
-                if (w < 1) {
-                    w = $("#"+urid).outerWidth(true);
-                }
-                if (w < 200) {
-                    w = 200;
-                }
-                if (h < 1) {
-                    h = $("#"+urid).outerHeight(true) + hh + fh + 10;
-                }
-                if (h < 100) {
-                    h = 100;
-                }
+//                 if (w < 1) {
+//                     w = $("#"+urid).outerWidth(true);
+//                 }
+//                 if (w < 200) {
+//                     w = 200;
+//                 }
+//                 if (h < 1) {
+//                     h = $("#"+urid).outerHeight(true) + hh + fh + 10;
+//                 }
+//                 if (h < 100) {
+//                     h = 100;
+//                 }
 
-                var t = 0, l = 0;
-                if (pos == 1) {
-                    l = bw / 2 - w / 2;
-                    t = bh / 2 - h / 2;
-                } else {
-                    l = p.left;
-                    t = p.top;
-                }
-                if (l > (bw - w)) {
-                    l = bw - w;
-                }
-                if ((t + h) > bh) {
-                    t = bh - h;
-                }
-                if (t < 10) {
-                    t = 10;
-                }
+//                 var t = 0, l = 0;
+//                 if (pos == 1) {
+//                     l = bw / 2 - w / 2;
+//                     t = bh / 2 - h / 2;
+//                 } else {
+//                     l = p.left;
+//                     t = p.top;
+//                 }
+//                 if (l > (bw - w)) {
+//                     l = bw - w;
+//                 }
+//                 if ((t + h) > bh) {
+//                     t = bh - h;
+//                 }
+//                 if (t < 10) {
+//                     t = 10;
+//                 }
 
-                $(".less-modal").css({
-                    "height": h +'px',
-                    "width": w +'px',
-                });
+//                 $(".less-modal").css({
+//                     "height": h +'px',
+//                     "width": w +'px',
+//                 });
                 
-                lessModalBodyHeight = h - hh - fh - 10;
-                lessModalBodyWidth  = $('.less-modal-body').width();
-                $(".less-modal-body").height(lessModalBodyHeight);
-            }
+//                 lessModalBodyHeight = h - hh - fh - 10;
+//                 lessModalBodyWidth  = $('.less-modal-body').width();
+//                 $(".less-modal-body").height(lessModalBodyHeight);
+//             }
             
-            $("#"+urid).css({
-                "z-index"   : "1",
-                "width"     : lessModalBodyWidth +"px",
-                "height"    : lessModalBodyHeight +"px",
-            });
+//             $("#"+urid).css({
+//                 "z-index"   : "1",
+//                 "width"     : lessModalBodyWidth +"px",
+//                 "height"    : lessModalBodyHeight +"px",
+//             });
             
-            pp = $('#'+ urid).position();
-            mov = pp.left;
-            if (mov < 0) {
-                mov = 0;
-            }
+//             pp = $('#'+ urid).position();
+//             mov = pp.left;
+//             if (mov < 0) {
+//                 mov = 0;
+//             }
             
-            if (!$('.less-modal-bg').is(':visible')) {
-                $(".less-modal-bg").remove();
-                $("body").append('<div class="less-modal-bg less-hide"></div>');
-                $(".less-modal-bg").fadeIn(150);                
-            }
+//             if (!$('.less-modal-bg').is(':visible')) {
+//                 $(".less-modal-bg").remove();
+//                 $("body").append('<div class="less-modal-bg less-hide"></div>');
+//                 $(".less-modal-bg").fadeIn(150);                
+//             }
             
-            if (firstload) {
-                $(".less-modal").css({
-                    "z-index": 100,
-                    "top": t +'px',
-                    "left": l +'px',
-                //}).hide().slideDown(200, function() {
-                }).hide().show(100, function() {
-                    lessModalResize();
-                });
-            }
-            $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 240, function() {
-                $(".less-modal-header .title").text(title);
-                $("#"+urid+" .inputfocus").focus();
+//             if (firstload) {
+//                 $(".less-modal").css({
+//                     "z-index": 100,
+//                     "top": t +'px',
+//                     "left": l +'px',
+//                 //}).hide().slideDown(200, function() {
+//                 }).hide().show(100, function() {
+//                     lessModalResize();
+//                 });
+//             }
+//             $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 240, function() {
+//                 $(".less-modal-header .title").text(title);
+//                 $("#"+urid+" .inputfocus").focus();
 
-                if (lessModalNextHistory != null) {
-                    delete lessModalData[lessModalNextHistory];
-                    $("#"+ lessModalNextHistory).remove();
-                    lessModalNextHistory = null;
-                }
-            });
-        },
-        error: function(xhr, textStatus, error) {
-            // TODO hdev_header_alert('error', xhr.responseText);
-        }
-    });
-}
+//                 if (lessModalNextHistory != null) {
+//                     delete lessModalData[lessModalNextHistory];
+//                     $("#"+ lessModalNextHistory).remove();
+//                     lessModalNextHistory = null;
+//                 }
+//             });
+//         },
+//         error: function(xhr, textStatus, error) {
+//             // TODO hdev_header_alert('error', xhr.responseText);
+//         }
+//     });
+// }
 
-function lessModalResize()
-{
-    var h  = $('.less-modal').height();
-    var hh = $('.less-modal-header').outerHeight(true);
-    var fh = $('.less-modal-footer').outerHeight(true);
-    lessModalBodyHeight = h - hh - fh - 10;
-    $('.less-modal-body').height(lessModalBodyHeight);
-    $('.less-modal-body-pagelet').height(lessModalBodyHeight);
-}
+// function lessModalResize()
+// {
+//     var h  = $('.less-modal').height();
+//     var hh = $('.less-modal-header').outerHeight(true);
+//     var fh = $('.less-modal-footer').outerHeight(true);
+//     lessModalBodyHeight = h - hh - fh - 10;
+//     $('.less-modal-body').height(lessModalBodyHeight);
+//     $('.less-modal-body-pagelet').height(lessModalBodyHeight);
+// }
 
-function lessModalScrollTop()
-{
-    $(".less_scroll").scrollTop(0);
-}
+// function lessModalScrollTop()
+// {
+//     $(".less_scroll").scrollTop(0);
+// }
 
-function lessModalButtonAdd(id, title, func, style)
-{
-    lessModalButtonClean(id);
+// function lessModalButtonAdd(id, title, func, style)
+// {
+//     lessModalButtonClean(id);
 
-    $(".less-modal-footer")
-        .append("<button id='"+ lessModalCurrent + id +"' class='btn btn-small "+style+"' onclick='"+func+"'>"+ title +"</button>")
-        .show(0, function() {
-            lessModalResize();
-            lessModalData[lessModalCurrent].btns[id] = {
-                "title":    title,
-                "func":     func,
-                "style":    style,
-            }
-        });
-}
+//     $(".less-modal-footer")
+//         .append("<button id='"+ lessModalCurrent + id +"' class='btn btn-small "+style+"' onclick='"+func+"'>"+ title +"</button>")
+//         .show(0, function() {
+//             lessModalResize();
+//             lessModalData[lessModalCurrent].btns[id] = {
+//                 "title":    title,
+//                 "func":     func,
+//                 "style":    style,
+//             }
+//         });
+// }
 
-function lessModalButtonClean(id)
-{
-    $("#"+ lessModalCurrent + id).remove();
-}
+// function lessModalButtonClean(id)
+// {
+//     $("#"+ lessModalCurrent + id).remove();
+// }
 
-function lessModalButtonCleanAll()
-{
-    $(".less-modal-footer button").each(function(index) {
-        $(this).remove();
-    });
-}
+// function lessModalButtonCleanAll()
+// {
+//     $(".less-modal-footer button").each(function(index) {
+//         $(this).remove();
+//     });
+// }
 
 
-function lessModalClose()
-{
-    $(".less-modal").hide(100, function(){
-        $(this).remove();
-        lessModalData = {};
-        lessModalCurrent = null;
-        lessModalBodyWidth = null;
-        lessModalBodyHeight = null;
-    });
-    $(".less-modal-bg").fadeOut(150);
-}
+// function lessModalClose()
+// {
+//     $(".less-modal").hide(100, function(){
+//         $(this).remove();
+//         lessModalData = {};
+//         lessModalCurrent = null;
+//         lessModalBodyWidth = null;
+//         lessModalBodyHeight = null;
+//     });
+//     $(".less-modal-bg").fadeOut(150);
+// }
 
 
 function lessPosGet()
@@ -699,8 +713,10 @@ function lessPosGet()
     return pos;
 }
 
-var lessCookie = {};
-lessCookie.Set = function(key, val, sec)
+var l4iCookie = {
+    
+};
+l4iCookie.Set = function(key, val, sec)
 {
     var expires = "";
     
@@ -712,11 +728,13 @@ lessCookie.Set = function(key, val, sec)
     
     document.cookie = key + "=" + val + expires + "; path=/";
 }
-lessCookie.SetByDay = function(key, val, day)
+
+l4iCookie.SetByDay = function(key, val, day)
 {
-    lessCookie.Set(key, val, day * 86400);
+    l4iCookie.Set(key, val, day * 86400);
 }
-lessCookie.Get = function(key)
+
+l4iCookie.Get = function(key)
 {
     var keyEQ = key + "=";
     var ca = document.cookie.split(';');
@@ -731,9 +749,10 @@ lessCookie.Get = function(key)
     
     return null;
 }
-lessCookie.Del = function(key)
+
+l4iCookie.Del = function(key)
 {
-    lessCookie.Set(key, "", -1);
+    l4iCookie.Set(key, "", -1);
 }
 
 
