@@ -2,7 +2,7 @@ var l4i = {
     //
 }
 
-function lessAlert(obj, type, msg)
+l4i.InnerAlert = function(obj, type, msg)
 {
     if (type == "") {
         $(obj).hide();
@@ -10,6 +10,65 @@ function lessAlert(obj, type, msg)
         $(obj).removeClass().addClass("alert "+ type).html(msg).fadeOut(200).fadeIn(200);
     }
 }
+
+l4i.timeChars = {
+    // Year
+    Y: function() { return this.getFullYear(); },
+    // Month
+    m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
+    // Day
+    d: function() { return (this.getDate() < 10 ? '0' : '') + this.getDate(); },
+    // Hour
+    H: function() { return (this.getHours() < 10 ? '0' : '') + this.getHours(); },
+    // Minute
+    i: function() { return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes(); },
+    // Second
+    s: function() { return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds(); },
+    u: function() {
+        var m = this.getMilliseconds();
+        return (m < 10 ? '00' : (m < 100 ? '0' : '')) + m;
+    },
+}
+
+Date.prototype.l4iTimeFormat = function(format) {
+    var date = this;
+    return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
+        return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
+    });
+};
+
+l4i.TimeParseFormat = function(time, format)
+{
+    return (new Date(time)).l4iTimeFormat(format);
+};
+
+l4i.UriQuery = function()
+{
+    // This function is anonymous, is executed immediately and 
+    // the return value is assigned to l4i.UriQuery!
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    
+    for (var i=0;i<vars.length;i++) {
+    
+        var pair = vars[i].split("=");
+    
+        // If first entry with this name
+        if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+        // If second entry with this name
+        } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+        // If third or later entry with this name
+        } else {
+            query_string[pair[0]].push(pair[1]);
+        }
+    } 
+    
+    return query_string;
+} ();
 
 // Modal Version 2.x
 var l4iModal = {
@@ -272,7 +331,7 @@ l4iModal.switch = function(modalid)
             "z-index"   : 200,
             "top"       : top +'px',
             "left"      : left +'px'
-        }).hide().show(50, function() {
+        }).hide().slideDown(100, function() {
             // l4iModal.Resize();
             // options.success();
         });
@@ -384,7 +443,7 @@ l4iModal.Resize = function()
 
 l4iModal.Close = function()
 {
-    $("#l4i-modal").hide(100, function() {
+    $("#l4i-modal").slideUp(100, function() {
         l4iModal.data = {};
         l4iModal.current = null;
         l4iModal.CurOptions = null;
@@ -481,7 +540,7 @@ l4iModal.ScrollTop = function()
 
 // function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
 // {
-//     var urid = lessCryptoMd5("modal"+url);
+//     var urid = l4iString.CryptoMd5("modal"+url);
 
 //     if (/\?/.test(url)) {
 //         urls = url + "&_=";
@@ -756,20 +815,26 @@ l4iCookie.Del = function(key)
 }
 
 
-var lessSession = {};
-lessSession.Set = function(key, val)
+var l4iSession = {
+
+};
+
+l4iSession.Set = function(key, val)
 {
     sessionStorage.setItem(key, val);
 }
-lessSession.Get = function(key)
+
+l4iSession.Get = function(key)
 {
     return sessionStorage.getItem(key);
 }
-lessSession.Del = function(key)
+
+l4iSession.Del = function(key)
 {
     sessionStorage.removeItem(key);
 }
-lessSession.DelByPrefix = function(prefix)
+
+l4iSession.DelByPrefix = function(prefix)
 {
     var prelen = prefix.length;
     var qs = {};
@@ -785,20 +850,26 @@ lessSession.DelByPrefix = function(prefix)
     }
 }
 
-var lessLocalStorage = {};
-lessLocalStorage.Set = function(key, val)
+var l4iStorage = {
+
+};
+
+l4iStorage.Set = function(key, val)
 {
     localStorage.setItem(key, val);
 }
-lessLocalStorage.Get = function(key)
+
+l4iStorage.Get = function(key)
 {
     return localStorage.getItem(key);
 }
-lessLocalStorage.Del = function(key)
+
+l4iStorage.Del = function(key)
 {
     localStorage.removeItem(key);
 }
-lessLocalStorage.DelByPrefix = function(prefix)
+
+l4iStorage.DelByPrefix = function(prefix)
 {
     if (!prefix) {
         return;
@@ -957,8 +1028,11 @@ lessLocalStorage.DelByPrefix = function(prefix)
 }());
 
 
-var lessTemplate = {};
-lessTemplate.RenderFromId = function(idto, idfrom, data)
+var l4iTemplate = {
+    
+};
+
+l4iTemplate.RenderFromId = function(idto, idfrom, data)
 {
     // TODO cache
     var elem = document.getElementById(idfrom);
@@ -976,7 +1050,7 @@ lessTemplate.RenderFromId = function(idto, idfrom, data)
     // }
 }
 
-lessTemplate.RenderById = function(idfrom, data)
+l4iTemplate.RenderById = function(idfrom, data)
 {
     // TODO cache
     var elem = document.getElementById(idfrom);
@@ -990,7 +1064,7 @@ lessTemplate.RenderById = function(idfrom, data)
     return tempFn(data);
 }
 
-lessTemplate.Render = function(options)
+l4iTemplate.Render = function(options)
 {
     options = options || {};
 
@@ -1077,8 +1151,11 @@ lessPagelet.Render = function(data, tpl, elemid)
     });
 }
 
+var l4iString = {
 
-function lessCryptoMd5(str)
+};
+
+l4iString.CryptoMd5 = function(str)
 {
     // http://kevin.vanzonneveld.net
     // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
@@ -1316,62 +1393,3 @@ function lessCryptoMd5(str)
     
     return temp.toLowerCase();
 }
-
-l4i.timeChars = {
-    // Year
-    Y: function() { return this.getFullYear(); },
-    // Month
-    m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
-    // Day
-    d: function() { return (this.getDate() < 10 ? '0' : '') + this.getDate(); },
-    // Hour
-    H: function() { return (this.getHours() < 10 ? '0' : '') + this.getHours(); },
-    // Minute
-    i: function() { return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes(); },
-    // Second
-    s: function() { return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds(); },
-    u: function() {
-        var m = this.getMilliseconds();
-        return (m < 10 ? '00' : (m < 100 ? '0' : '')) + m;
-    },
-}
-
-Date.prototype.l4iTimeFormat = function(format) {
-    var date = this;
-    return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
-        return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
-    });
-};
-
-l4i.TimeParseFormat = function(time, format)
-{
-    return (new Date(time)).l4iTimeFormat(format);
-};
-
-l4i.UriQuery = function ()
-{
-    // This function is anonymous, is executed immediately and 
-    // the return value is assigned to l4i.UriQuery!
-    var query_string = {};
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    
-    for (var i=0;i<vars.length;i++) {
-    
-        var pair = vars[i].split("=");
-    
-        // If first entry with this name
-        if (typeof query_string[pair[0]] === "undefined") {
-            query_string[pair[0]] = pair[1];
-        // If second entry with this name
-        } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
-            query_string[pair[0]] = arr;
-        // If third or later entry with this name
-        } else {
-            query_string[pair[0]].push(pair[1]);
-        }
-    } 
-    
-    return query_string;
-} ();
