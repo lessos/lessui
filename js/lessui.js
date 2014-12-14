@@ -1109,7 +1109,11 @@ l4iTemplate.Render = function(options)
             return;
         }
 
-        var source = elem.value || elem.innerHTML;    
+        var source = elem.value || elem.innerHTML;
+
+        if (options.i18n) {
+            source = l4i.TR(source);
+        }
 
         if (options.data !== undefined) {
             var tempFn = doT.template(source);
@@ -1134,6 +1138,10 @@ l4iTemplate.Render = function(options)
             type    : "GET",
             timeout : 10000,
             success : function(rsp) {
+
+                if (options.i18n) {
+                    rsp = l4i.TR(rsp);
+                }
     
                 if (options.data !== undefined) {
                     var tempFn = doT.template(rsp);
