@@ -110,7 +110,17 @@ lessModal.switch = function(modalid)
     if (!document.getElementById(modalid)) {
     
         var body = "<div id='"+ modalid +"' class='less-modal-body-pagelet less_scroll'>";
-        if (options.tplid !== undefined) {
+
+        if (options.tplsrc !== undefined) {
+
+            if (options.data !== undefined) {
+                var tempFn = doT.template(options.tplsrc);
+                body += tempFn(options.data);
+            } else {
+                body += options.tplsrc;
+            }
+
+        } else if (options.tplid !== undefined) {
 
             var elem = document.getElementById(options.tplid);
             if (!elem) {
@@ -154,7 +164,8 @@ lessModal.switch = function(modalid)
                     body += "Failed on load template";
                 }
             });
-        }    
+        }
+
         body += "</div>";
         $("#less-modal-body-page").append(body);
     }
@@ -247,7 +258,7 @@ lessModal.switch = function(modalid)
             "z-index"   : 200,
             "top"       : top +'px',
             "left"      : left +'px'
-        }).hide().show(100, function() {
+        }).hide().show(50, function() {
             // lessModal.Resize();
             // options.success();
         });
@@ -266,7 +277,7 @@ lessModal.switch = function(modalid)
             "z-index"   : 200,
             "top"       : top +'px',
             "left"      : left +'px'
-        }, 200, function() {
+        }, 50, function() {
             // lessModal.Resize();
             // options.success();
         });
