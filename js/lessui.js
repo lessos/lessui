@@ -1,5 +1,29 @@
 var l4i = {
-    //
+    pos : {x : 0, y : 0},
+}
+
+$(document).ready(function() { 
+    // Firefox
+    if (!window.event) {
+        // $(document).mousemove(function(e) {
+        $(document).mousedown(function(e) {
+            l4i.pos.x = e.pageX;
+            l4i.pos.y = e.pageY;
+        });
+    }
+});
+
+l4i.PosGet = function()
+{
+    var pos = null;
+
+    if (window.event) {
+        pos = {"left": window.event.pageX, "top": window.event.pageY};
+    } else {
+        pos = {"left": l4i.pos.x, "top": l4i.pos.y};
+    }
+    
+    return pos;
 }
 
 l4i.InnerAlert = function(obj, type, msg)
@@ -24,6 +48,31 @@ l4i.TR = function(text)
     });
 }
 
+l4i.Clone = function(obj)
+{
+    var copy;
+
+    if (null == obj || typeof obj != "object") {
+        return obj;
+    }
+
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+    } else if (obj instanceof Array) {
+        return obj.slice(0);
+    } else if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) {
+                copy[attr] = l4i.Clone(obj[attr]);
+            }
+        }
+    }
+
+    return copy;
+}
+
 l4i.timeChars = {
     // Year
     Y: function() { return this.getFullYear(); },
@@ -43,17 +92,27 @@ l4i.timeChars = {
     },
 }
 
-Date.prototype.l4iTimeFormat = function(format) {
+Date.prototype.l4iTimeFormat = function(format)
+{
     var date = this;
     return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
         return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
     });
-};
+}
 
 l4i.TimeParseFormat = function(time, format)
 {
-    return (new Date(time)).l4iTimeFormat(format);
-};
+    if (!time) {
+        return (new Date()).l4iTimeFormat(format);
+    }
+
+    var tn = Date.parse(time);
+    if (!tn) {
+        tn = Date.parse(time.replace(/\-/g,"/"));
+    }
+
+    return (new Date(tn)).l4iTimeFormat(format);
+}
 
 l4i.UriQuery = function()
 {
@@ -81,7 +140,13 @@ l4i.UriQuery = function()
     } 
     
     return query_string;
-} ();
+}
+
+l4i.StringTrim = function(str, chr)
+{
+    var re = (!chr) ? new RegExp('^\\s+|\\s+$', 'g') : new RegExp('^'+chr+'+|'+chr+'+$', 'g');
+    return str.replace(re, '');
+}
 
 // Modal Version 2.x
 var l4iModal = {
@@ -306,8 +371,8 @@ l4iModal.switch = function(modalid)
         left = bw / 2 - options.width / 2;
         top = bh / 2 - options.height / 2;
     } else {
-        var p = lessPosGet();
-        top = p.top, left = p.left;
+        var p = l4i.PosGet();
+        top = p.top - 10, left = p.left - 10;
     }
     if (left > (bw - options.width)) {
         left = bw - options.width;
@@ -477,324 +542,11 @@ l4iModal.ScrollTop = function()
     $(".less-modal-body-pagelet.less_scroll").scrollTop(0);
 }
 
-
-// var lessModalData        = {};
-// var lessModalCurrent     = null;
-// var lessModalNextHistory = null;
-// var lessModalBodyWidth   = null;
-// var lessModalBodyHeight  = null;
-
-// function lessModalNextPost(url, title, opt, post)
-// {
-//     lessModalOpenRaw('POST', url, null, null, null, title, opt, post);
-// }
-
-// function lessModalNext(url, title, opt)
-// {
-//     lessModalOpen(url, null, null, null, title, opt);
-// }
-
-// function lessModalPrevId()
-// {
-//     var prev = null;
-//     for (var i in lessModalData) {
-        
-//         if (lessModalData[i].urid == lessModalCurrent && prev != null) {
-//             return prev;
-//         }
-//         prev = i;
-//     }
-
-//     return null;
-// }
-
-// function lessModalPrev()
-// {
-//     var prev = lessModalPrevId();
-//     if (prev != null) {
-//         lessModalNextHistory = lessModalCurrent;
-//         lessModalSwitch(prev); 
-//     }
-// }
-
-// function lessModalSwitch(urid)
-// {
-//     if (!lessModalData[urid].title) {
-//         return;
-//     }
-//     pp = $('#'+ urid).position();
-//     mov = pp.left;
-//     if (mov < 0) {
-//         mov = 0;
-//     }
-//     $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 300, function() {
-        
-//         $('.less-modal-header .title').text(lessModalData[urid].title);
-    
-//         $('.less-modal-footer').empty();
-//         for (var i in lessModalData[urid].btns) {
-//             lessModalButtonAdd(lessModalData[urid].btns[i].id, 
-//                 lessModalData[urid].btns[i].title,
-//                 lessModalData[urid].btns[i].func,
-//                 lessModalData[urid].btns[i].style);
-//         }
-//         lessModalCurrent = urid;
-
-//         if (lessModalNextHistory != null) {
-//             delete lessModalData[lessModalNextHistory];
-//             $("#"+ lessModalNextHistory).remove();
-//             lessModalNextHistory = null;
-//         }
-//     });
-// }
-
-// function lessModalOpenPost(url, pos, w, h, title, opt, post)
-// {
-//     lessModalOpenRaw('POST', url, pos, w, h, title, opt, post)
-// }
-
-// function lessModalOpen(url, pos, w, h, title, opt)
-// {
-//     lessModalOpenRaw('GET', url, pos, w, h, title, opt, "")
-// }
-
-// function lessModalOpenRaw(method, url, pos, w, h, title, opt, post)
-// {
-//     var urid = l4iString.CryptoMd5("modal"+url);
-
-//     if (/\?/.test(url)) {
-//         urls = url + "&_=";
-//     } else {
-//         urls = url + "?_=";
-//     }
-//     urls += Math.random();
-
-//     var p  = lessPosGet();
-//     var bw = $(window).width();
-//     var bh = $(window).height();
-
-//     $.ajax({
-//         url     : urls,
-//         type    : method,
-//         timeout : 30000,
-//         data    : post,
-//         success : function(rsp) {
-
-//             var firstload = false;
-//             if (lessModalCurrent == null) {
-//                 $(".less-modal").remove();
-//                 firstload = true;
-//             }
-//             lessModalCurrent = urid;
-//             lessModalData[urid] = {
-//                 "urid":     urid,
-//                 "url":      url,
-//                 "title":    title,
-//                 "btns":     {},
-//             }
-//             $(".less-modal-footer").empty();
-
-//             var pl = '<div class="less-modal-body-pagelet less_scroll" id="'+urid+'">'+rsp+'</div>';
-            
-//             if (firstload) {
-                
-//                 var apd = '<div class="less-modal">';
-                
-//                 apd += '<div class="less-modal-header">\
-//                     <span class="title">'+title+'</span>\
-//                     <button class="close" onclick="lessModalClose()">×</button>\
-//                     </div>';
-
-//                 apd += '<div class="less-modal-body">';
-//                 apd += '<div class="less-modal-body-page">'+pl+'</div>';
-//                 apd += '</div>';
-                
-//                 apd += '<div class="less-modal-footer"><div>';
-                
-//                 apd += '</div>'
-
-//                 $("body").append(apd);
-                
-//             } else {
-//                 $(".less-modal-body-page").append(pl);
-//             }
-
-//             $("#"+urid).css({
-//                 "z-index": "-100"
-//             }).show();
-
-//             if (!$('.less-modal').is(':visible')) {
-//                 $(".less-modal").css({
-//                     "z-index": "-100"
-//                 }).show();
-//             }
-                
-//             if (firstload) {
-
-//                 var hh = $('.less-modal-header').outerHeight(true);
-//                 var fh = $('.less-modal-footer').outerHeight(true);
-                
-//                 if (w < 1) {
-//                     w = $("#"+urid).outerWidth(true);
-//                 }
-//                 if (w < 200) {
-//                     w = 200;
-//                 }
-//                 if (h < 1) {
-//                     h = $("#"+urid).outerHeight(true) + hh + fh + 10;
-//                 }
-//                 if (h < 100) {
-//                     h = 100;
-//                 }
-
-//                 var t = 0, l = 0;
-//                 if (pos == 1) {
-//                     l = bw / 2 - w / 2;
-//                     t = bh / 2 - h / 2;
-//                 } else {
-//                     l = p.left;
-//                     t = p.top;
-//                 }
-//                 if (l > (bw - w)) {
-//                     l = bw - w;
-//                 }
-//                 if ((t + h) > bh) {
-//                     t = bh - h;
-//                 }
-//                 if (t < 10) {
-//                     t = 10;
-//                 }
-
-//                 $(".less-modal").css({
-//                     "height": h +'px',
-//                     "width": w +'px',
-//                 });
-                
-//                 lessModalBodyHeight = h - hh - fh - 10;
-//                 lessModalBodyWidth  = $('.less-modal-body').width();
-//                 $(".less-modal-body").height(lessModalBodyHeight);
-//             }
-            
-//             $("#"+urid).css({
-//                 "z-index"   : "1",
-//                 "width"     : lessModalBodyWidth +"px",
-//                 "height"    : lessModalBodyHeight +"px",
-//             });
-            
-//             pp = $('#'+ urid).position();
-//             mov = pp.left;
-//             if (mov < 0) {
-//                 mov = 0;
-//             }
-            
-//             if (!$('.less-modal-bg').is(':visible')) {
-//                 $(".less-modal-bg").remove();
-//                 $("body").append('<div class="less-modal-bg less-hide"></div>');
-//                 $(".less-modal-bg").fadeIn(150);                
-//             }
-            
-//             if (firstload) {
-//                 $(".less-modal").css({
-//                     "z-index": 100,
-//                     "top": t +'px',
-//                     "left": l +'px',
-//                 //}).hide().slideDown(200, function() {
-//                 }).hide().show(100, function() {
-//                     lessModalResize();
-//                 });
-//             }
-//             $('.less-modal-body-page').animate({top: 0, left: "-"+ mov +"px"}, 240, function() {
-//                 $(".less-modal-header .title").text(title);
-//                 $("#"+urid+" .inputfocus").focus();
-
-//                 if (lessModalNextHistory != null) {
-//                     delete lessModalData[lessModalNextHistory];
-//                     $("#"+ lessModalNextHistory).remove();
-//                     lessModalNextHistory = null;
-//                 }
-//             });
-//         },
-//         error: function(xhr, textStatus, error) {
-//             // TODO hdev_header_alert('error', xhr.responseText);
-//         }
-//     });
-// }
-
-// function lessModalResize()
-// {
-//     var h  = $('.less-modal').height();
-//     var hh = $('.less-modal-header').outerHeight(true);
-//     var fh = $('.less-modal-footer').outerHeight(true);
-//     lessModalBodyHeight = h - hh - fh - 10;
-//     $('.less-modal-body').height(lessModalBodyHeight);
-//     $('.less-modal-body-pagelet').height(lessModalBodyHeight);
-// }
-
-// function lessModalScrollTop()
-// {
-//     $(".less_scroll").scrollTop(0);
-// }
-
-// function lessModalButtonAdd(id, title, func, style)
-// {
-//     lessModalButtonClean(id);
-
-//     $(".less-modal-footer")
-//         .append("<button id='"+ lessModalCurrent + id +"' class='btn btn-small "+style+"' onclick='"+func+"'>"+ title +"</button>")
-//         .show(0, function() {
-//             lessModalResize();
-//             lessModalData[lessModalCurrent].btns[id] = {
-//                 "title":    title,
-//                 "func":     func,
-//                 "style":    style,
-//             }
-//         });
-// }
-
-// function lessModalButtonClean(id)
-// {
-//     $("#"+ lessModalCurrent + id).remove();
-// }
-
-// function lessModalButtonCleanAll()
-// {
-//     $(".less-modal-footer button").each(function(index) {
-//         $(this).remove();
-//     });
-// }
-
-
-// function lessModalClose()
-// {
-//     $(".less-modal").hide(100, function(){
-//         $(this).remove();
-//         lessModalData = {};
-//         lessModalCurrent = null;
-//         lessModalBodyWidth = null;
-//         lessModalBodyHeight = null;
-//     });
-//     $(".less-modal-bg").fadeOut(150);
-// }
-
-
-function lessPosGet()
-{
-    var pos = null;
-    
-    if (window.event) {
-        pos = {"left": window.event.pageX, "top": window.event.pageY};
-    } else if (pos == null) {
-        $(document).mousemove(function(e) {
-            pos = {"left": e.pageX, "top": e.pageY};
-        });
-    }
-    
-    return pos;
-}
-
+// Cookie
 var l4iCookie = {
     
 };
+
 l4iCookie.Set = function(key, val, sec)
 {
     var expires = "";
@@ -834,7 +586,7 @@ l4iCookie.Del = function(key)
     l4iCookie.Set(key, "", -1);
 }
 
-
+//
 var l4iSession = {
 
 };
@@ -870,6 +622,7 @@ l4iSession.DelByPrefix = function(prefix)
     }
 }
 
+//
 var l4iStorage = {
 
 };
@@ -1047,7 +800,7 @@ l4iStorage.DelByPrefix = function(prefix)
     };
 }());
 
-
+//
 var l4iTemplate = {
     
 };
@@ -1091,7 +844,7 @@ l4iTemplate.Render = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-        
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -1102,10 +855,10 @@ l4iTemplate.Render = function(options)
     }
 
     if (options.tplid !== undefined) {
-        
+
         var elem = document.getElementById(options.tplid);
         if (!elem) {
-        	options.error(400, "tplid can not found");
+            options.error(400, "tplid can not found");
             return;
         }
 
@@ -1423,7 +1176,8 @@ l4iString.CryptoMd5 = function(str)
 }
 
 
-function _sprintf() {
+function _sprintf()
+{
   //  discuss at: http://phpjs.org/functions/sprintf/
   // original by: Ash Searle (http://hexmen.com/blog/)
   // improved by: Michael White (http://getsprink.com)
@@ -1613,28 +1367,3 @@ function _sprintf() {
   return format.replace(regex, doFormat);
 }
 
-
-l4i.Clone = function(obj)
-{
-    var copy;
-
-    if (null == obj || typeof obj != "object") {
-        return obj;
-    }
-
-    if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-    } else if (obj instanceof Array) {
-        return obj.slice(0);
-    } else if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) {
-                copy[attr] = l4i.Clone(obj[attr]);
-            }
-        }
-    }
-
-    return copy;
-}
