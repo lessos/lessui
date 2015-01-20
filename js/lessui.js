@@ -854,7 +854,22 @@ l4iTemplate.Render = function(options)
         return;
     }
 
-    if (options.tplid !== undefined) {
+    if (options.tplsrc !== undefined) {
+        
+        if (options.i18n) {
+            options.tplsrc = l4i.TR(options.tplsrc);
+        }
+
+        if (options.data !== undefined) {
+            var tempFn = doT.template(options.tplsrc);
+            $("#"+ options.dstid).html(tempFn(options.data));
+        } else {
+            $("#"+ options.dstid).html(options.tplsrc);
+        }
+
+        options.success();
+
+    } else if (options.tplid !== undefined) {
 
         var elem = document.getElementById(options.tplid);
         if (!elem) {
