@@ -862,9 +862,18 @@ l4iTemplate.Render = function(options)
 
         if (options.data !== undefined) {
             var tempFn = doT.template(options.tplsrc);
-            $("#"+ options.dstid).html(tempFn(options.data));
+            if (options.append) {
+                $("#"+ options.dstid).append(tempFn(options.data));
+            } else {
+                $("#"+ options.dstid).html(tempFn(options.data));
+            }
+            
         } else {
-            $("#"+ options.dstid).html(options.tplsrc);
+            if (options.append) {
+                $("#"+ options.dstid).append(options.tplsrc);
+            } else {
+                $("#"+ options.dstid).html(options.tplsrc);
+            }
         }
 
         options.success();
@@ -885,9 +894,17 @@ l4iTemplate.Render = function(options)
 
         if (options.data !== undefined) {
             var tempFn = doT.template(source);
-            $("#"+ options.dstid).html(tempFn(options.data));
+            if (options.append) {
+                $("#"+ options.dstid).append(tempFn(options.data));
+            } else {
+                $("#"+ options.dstid).html(tempFn(options.data));
+            }
         } else {
-            $("#"+ options.dstid).html(source);
+            if (options.append) {
+                $("#"+ options.dstid).append(source);
+            } else {
+                $("#"+ options.dstid).html(source);
+            }
         }
 
         options.success();
@@ -913,9 +930,18 @@ l4iTemplate.Render = function(options)
     
                 if (options.data !== undefined) {
                     var tempFn = doT.template(rsp);
-                    $("#"+ options.dstid).html(tempFn(options.data));
+                    if (options.append) {
+                        $("#"+ options.dstid).append(tempFn(options.data));
+                    } else {
+                        $("#"+ options.dstid).html(tempFn(options.data));
+                    }
                 } else {
-                    $("#"+ options.dstid).html(rsp);
+                    
+                    if (options.append) {
+                        $("#"+ options.dstid).append(rsp);
+                    } else {
+                        $("#"+ options.dstid).html(rsp);
+                    }
                 }
     
                 options.success();
