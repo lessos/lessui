@@ -1,31 +1,5 @@
-#!/usr/bin/php
+#!/bin/bash
 
-<?php
+lessc less/lessui.less > css/lessui.css
+lessc -x less/lessui.less > css/lessui.min.css
 
-date_default_timezone_set("Asia/Shanghai");
-
-if (!file_exists("lcproject.json")) {
-    die("lcproject.json does not exist");
-}
-$json = json_decode(file_get_contents("lcproject.json"), false);
-if ($json->projid != "lessui") {
-    die("lcproject.json does not exist");
-}
-
-
-shell_exec("lessc less/lessui.less > css/lessui.css");
-$txt = file_get_contents("css/lessui.css");
-$txt = str_replace(
-    array("{{.lessui-version}}", "{{.lessui-copyright}}"),
-    array($json->version, date("Y")), $txt);
-file_put_contents("css/lessui.css", $txt);
-
-
-shell_exec("lessc -x less/lessui.less > css/lessui.min.css");
-$txt = file_get_contents("css/lessui.min.css");
-$txt = str_replace(
-    array("{{.lessui-version}}", "{{.lessui-copyright}}"),
-    array($json->version, date("Y")), $txt);
-file_put_contents("css/lessui.min.css", $txt);
-
-die("=== WELL DONE ===\n");
