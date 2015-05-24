@@ -1,5 +1,6 @@
 var l4i = {
     pos : {x : 0, y : 0},
+    urlevs : {},
 }
 
 $(document).ready(function() { 
@@ -11,7 +12,44 @@ $(document).ready(function() {
             l4i.pos.y = e.pageY;
         });
     }
+
+    if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
+        window.onhashchange = l4i.urlEventHandler;
+    } else {
+        setInterval(function() {
+            var ischanged = l4i.urlEventChanged();
+            if (ischanged) {
+                l4i.urlEventHandler();
+            }
+        }, 150);
+    }
 });
+
+l4i.UrlEventRegister = function(name, func)
+{
+    if (!name || typeof name != "string" || !func || typeof func != "function") {
+        return;
+    }
+
+    l4i.urlevs[name] = func;
+}
+
+l4i.urlEventHandler = function()
+{
+    var name = location.hash.replace("#", "");
+    if (!name) {
+        return;
+    }
+
+    if (l4i.urlevs[name]) {
+        l4i.urlevs[name]();
+    }
+}
+
+l4i.urlEventChanged = function()
+{
+    return false;
+}
 
 l4i.PosGet = function()
 {
