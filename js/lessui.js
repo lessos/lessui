@@ -51,6 +51,95 @@ l4i.urlEventChanged = function()
     return false;
 }
 
+l4i.Pager = function(metalist)
+{
+    if (!metalist.startIndex) {
+        metalist.startIndex = 0;
+    }
+
+    if (!metalist.totalResults) {
+        metalist.totalResults = 0;
+    }
+
+    if (!metalist.itemsPerList) {
+        metalist.itemsPerList = 10;
+    } else if (metalist.itemsPerList < 1) {
+        metalist.itemsPerList = 10;
+    }
+
+    if (!metalist.RangeLen) {
+        metalist.RangeLen = 10;
+    } else if (metalist.RangeLen < 1) {
+        metalist.RangeLen = 1;
+    }
+
+    var pg = {
+        ItemCount:         metalist.totalResults,
+        CountPerPage:      metalist.itemsPerList,
+        PageCount:         0,
+        CurrentPageNumber: 0,
+        FirstPageNumber:   0,
+        PrevPageNumber:    0,
+        NextPageNumber:    0,
+        LastPageNumber:    0,
+        RangeLen:          metalist.RangeLen,
+        RangeStartNumber:  1,
+        RangeEndNumber:    0,
+        RangePages:        [],        
+    }
+
+    if (metalist.startIndex > 0) {
+        pg.CurrentPageNumber = parseInt(metalist.startIndex / pg.ItemCount) + 1;
+    }
+
+    //
+    pg.PageCount = parseInt(pg.ItemCount / pg.CountPerPage);
+    if (pg.ItemCount % pg.CountPerPage > 0) {
+        pg.PageCount++;
+    }
+
+    if (pg.CurrentPageNumber < 1) {
+        pg.CurrentPageNumber = 1;
+    } else if (pg.CurrentPageNumber > pg.PageCount) {
+        pg.CurrentPageNumber = pg.PageCount;
+    }
+
+    //
+    if (pg.CurrentPageNumber > (pg.RangeLen/2)) {
+        pg.RangeStartNumber = pg.CurrentPageNumber - pg.RangeLen/2;
+    }
+
+    pg.RangeEndNumber = pg.PageCount;
+    if ((pg.RangeStartNumber + pg.RangeLen) < pg.PageCount) {
+        pg.RangeEndNumber = pg.RangeStartNumber + pg.RangeLen - 1;
+    }
+
+    // taking previous page
+    if (pg.CurrentPageNumber > 1) {
+        pg.PrevPageNumber = pg.CurrentPageNumber - 1;
+    }
+
+    // taking next page
+    if (pg.CurrentPageNumber < pg.PageCount) {
+        pg.NextPageNumber = pg.CurrentPageNumber + 1;
+    }
+
+    // taking pages list
+    for (var i = pg.RangeStartNumber; i <= pg.RangeEndNumber; i++) {
+        pg.RangePages.push(i);
+    }
+
+    if (pg.RangeStartNumber > 1) {
+        pg.FirstPageNumber = 1;
+    }
+
+    if (pg.RangeEndNumber < pg.PageCount) {
+        pg.LastPageNumber = pg.PageCount;
+    }
+
+    return pg;
+}
+
 l4i.PosGet = function()
 {
     var pos = null;
