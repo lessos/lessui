@@ -1088,25 +1088,7 @@ l4iTemplate.Render = function(options)
 }
 
 
-var lessPagelet = {};
-lessPagelet.Render = function(data, tpl, elemid)
-{
-    var elem = document.getElementById(elemid);
-    if (!elem) {
-        return "";
-    }
-
-    // TODO cache template
-    $.ajax({
-        url     : "/lesscreator/" + tpl,
-        type    : "GET",
-        timeout : 10000,
-        success : function(rsp) {
-            elem.innerHTML = doT.template(rsp)(data);
-        }
-    });
-}
-
+//
 var l4iString = {
 
 };
