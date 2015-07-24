@@ -13,16 +13,23 @@ $(document).ready(function() {
         });
     }
 
-    if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
-        window.onhashchange = l4i.urlEventHandler;
-    } else {
-        setInterval(function() {
-            var ischanged = l4i.urlEventChanged();
-            if (ischanged) {
-                l4i.urlEventHandler();
-            }
-        }, 150);
-    }
+    $(document).on("click", "a.l4i-nav-item", function() {
+        $(this).parent().find("a.active").removeClass("active");
+        $(this).addClass("active");
+
+        l4i.urlEventHandler($(this).attr("href"));
+    });
+
+    // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
+    //     window.onhashchange = l4i.urlEventHandler;
+    // } else {
+    //     setInterval(function() {
+    //         var ischanged = l4i.urlEventChanged();
+    //         if (ischanged) {
+    //             l4i.urlEventHandler();
+    //         }
+    //     }, 150);
+    // }
 });
 
 l4i.UrlEventRegister = function(name, func)
@@ -34,15 +41,16 @@ l4i.UrlEventRegister = function(name, func)
     l4i.urlevs[name] = func;
 }
 
-l4i.urlEventHandler = function()
+l4i.urlEventHandler = function(name)
 {
-    var name = location.hash.replace("#", "");
-    if (!name) {
-        return;
-    }
+    name = name.replace("#", "");
+    // var name = location.hash.replace("#", "");
+    // if (!name) {
+    //     return;
+    // }
 
     if (l4i.urlevs[name]) {
-        l4i.urlevs[name]();
+        l4i.urlevs[name]();    
     }
 }
 
