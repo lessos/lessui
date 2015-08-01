@@ -97,7 +97,7 @@ l4i.Pager = function(metalist)
     }
 
     if (metalist.startIndex > 0) {
-        pg.CurrentPageNumber = parseInt(metalist.startIndex / pg.ItemCount) + 1;
+        pg.CurrentPageNumber = parseInt(metalist.startIndex / metalist.itemsPerList) + 1;
     }
 
     //
