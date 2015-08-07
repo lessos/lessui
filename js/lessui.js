@@ -17,16 +17,16 @@ $(document).ready(function() {
         $(this).parent().find("a.active").removeClass("active");
         $(this).addClass("active");
 
-        l4i.urlEventHandler($(this).attr("href"));
+        l4i.UrlEventHandler($(this).attr("href"));
     });
 
     // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
-    //     window.onhashchange = l4i.urlEventHandler;
+    //     window.onhashchange = l4i.UrlEventHandler;
     // } else {
     //     setInterval(function() {
     //         var ischanged = l4i.urlEventChanged();
     //         if (ischanged) {
-    //             l4i.urlEventHandler();
+    //             l4i.UrlEventHandler();
     //         }
     //     }, 150);
     // }
@@ -41,7 +41,7 @@ l4i.UrlEventRegister = function(name, func)
     l4i.urlevs[name] = func;
 }
 
-l4i.urlEventHandler = function(name)
+l4i.UrlEventHandler = function(name)
 {
     name = name.replace("#", "");
     // var name = location.hash.replace("#", "");
@@ -283,6 +283,61 @@ l4i.StringTrim = function(str, chr)
     return str.replace(re, '');
 }
 
+l4iAlert = {}
+
+l4iAlert.Close = function(msg)
+{
+    $("#l4i-alert").remove();
+    $("#l4i-modal-bg").remove();
+}
+
+l4iAlert.Error = function(msg)
+{
+    var ctn = '<div id="l4i-alert" class="alert alert-danger" style="position: absolute;display:none">\
+        <button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>\
+        <span id="l4i-alert-msg"></span>\
+        </div>';
+
+    $("#l4i-alert").remove();
+    $("body").append(ctn);   
+
+    var bw = $(window).width(), bh = $(window).height();
+    var width = bw / 2;
+    if (width < 200) {
+        width = 200;
+    } else if (width > 900) {
+        width = 900;
+    }
+
+    var left = bw / 2 - width / 2;
+    var top = 30;
+    
+    if (left > (bw - width)) {
+        left = bw - width;
+    }
+
+    $("#l4i-alert").css({
+        "width"     : width +"px",
+        "min-height": "30px",
+    });
+    $("#l4i-alert-msg").text(msg);
+
+    if (!$('#l4i-modal-bg').is(':visible')) {
+        $("#l4i-modal-bg").remove();
+        $("body").append('<div id="l4i-modal-bg" class="less-hide"></div>');
+        $("#l4i-modal-bg").fadeIn(150);                
+    }
+
+    $("#l4i-alert").css({
+        "z-index"   : 2000,
+        "top"       : top +'px',
+        "left"      : left +'px',            
+    }).hide().slideDown(100, function() {
+
+    });
+}
+
+
 // Modal Version 2.x
 var l4iModal = {
     version     : "2.0",
@@ -349,7 +404,7 @@ l4iModal.Open = function(options)
     l4iModal.switch(options.id);
 }
 
-l4iModal.switch = function(modalid)
+l4iModal.switch = function(modalid, cb)
 {
     var options = l4iModal.data[modalid];
     if (options.id === undefined) {
@@ -594,7 +649,15 @@ l4iModal.switch = function(modalid)
         $("#"+ modalid+" .inputfocus").focus();
 
         l4iModal.Resize();
-        options.success();
+
+        if (options.success) {
+            options.success();
+            l4iModal.data[options.id].success = null;
+        }        
+
+        if (cb) {
+            cb();
+        }
     });
 
     l4iModal.current = options.id;
@@ -619,12 +682,12 @@ l4iModal.PrevId = function()
     return null;
 }
 
-l4iModal.Prev = function()
+l4iModal.Prev = function(cb)
 {
     var previd = l4iModal.PrevId();
     if (previd != null) {
         // l4iModal.nextHistory = l4iModal.current;
-        l4iModal.switch(previd); 
+        l4iModal.switch(previd, cb);
     }
 }
 
@@ -950,11 +1013,14 @@ l4iTemplate.RenderFromID = function(idto, idfrom, data)
     if (!elem) {
         return "";
     }
+    var source = elem.value || elem.innerHTML;
 
-    var source = elem.value || elem.innerHTML;    
-    var tempFn = doT.template(source);
-
-    $("#"+ idto).html(tempFn(data));
+    if (data) {
+        var tempFn = doT.template(source);
+        $("#"+ idto).html(tempFn(data));
+    } else {
+        $("#"+ idto).html(source);
+    }
     // var elemto = document.getElementById(idto);
     // if (elemto) {
     //     elemto.innerHTML = tempFn(data);
