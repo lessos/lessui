@@ -1,5 +1,6 @@
 var l4i = {
     pos : {x : 0, y : 0},
+    urlevs : {},
 }
 
 $(document).ready(function() { 
@@ -11,7 +12,141 @@ $(document).ready(function() {
             l4i.pos.y = e.pageY;
         });
     }
+
+    $(document).on("click", "a.l4i-nav-item", function() {
+        $(this).parent().find("a.active").removeClass("active");
+        $(this).addClass("active");
+
+        l4i.UrlEventHandler($(this).attr("href"));
+    });
+
+    // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
+    //     window.onhashchange = l4i.UrlEventHandler;
+    // } else {
+    //     setInterval(function() {
+    //         var ischanged = l4i.urlEventChanged();
+    //         if (ischanged) {
+    //             l4i.UrlEventHandler();
+    //         }
+    //     }, 150);
+    // }
 });
+
+l4i.UrlEventRegister = function(name, func)
+{
+    if (!name || typeof name != "string" || !func || typeof func != "function") {
+        return;
+    }
+
+    l4i.urlevs[name] = func;
+}
+
+l4i.UrlEventHandler = function(name)
+{
+    name = name.replace("#", "");
+    // var name = location.hash.replace("#", "");
+    // if (!name) {
+    //     return;
+    // }
+
+    if (l4i.urlevs[name]) {
+        l4i.urlevs[name]();    
+    }
+}
+
+l4i.urlEventChanged = function()
+{
+    return false;
+}
+
+l4i.Pager = function(metalist)
+{
+    if (!metalist.startIndex) {
+        metalist.startIndex = 0;
+    }
+
+    if (!metalist.totalResults) {
+        metalist.totalResults = 0;
+    }
+
+    if (!metalist.itemsPerList) {
+        metalist.itemsPerList = 10;
+    } else if (metalist.itemsPerList < 1) {
+        metalist.itemsPerList = 10;
+    }
+
+    if (!metalist.RangeLen) {
+        metalist.RangeLen = 10;
+    } else if (metalist.RangeLen < 1) {
+        metalist.RangeLen = 1;
+    }
+
+    var pg = {
+        ItemCount:         metalist.totalResults,
+        CountPerPage:      metalist.itemsPerList,
+        PageCount:         0,
+        CurrentPageNumber: 0,
+        FirstPageNumber:   0,
+        PrevPageNumber:    0,
+        NextPageNumber:    0,
+        LastPageNumber:    0,
+        RangeLen:          metalist.RangeLen,
+        RangeStartNumber:  1,
+        RangeEndNumber:    0,
+        RangePages:        [],        
+    }
+
+    if (metalist.startIndex > 0) {
+        pg.CurrentPageNumber = parseInt(metalist.startIndex / metalist.itemsPerList) + 1;
+    }
+
+    //
+    pg.PageCount = parseInt(pg.ItemCount / pg.CountPerPage);
+    if (pg.ItemCount % pg.CountPerPage > 0) {
+        pg.PageCount++;
+    }
+
+    if (pg.CurrentPageNumber < 1) {
+        pg.CurrentPageNumber = 1;
+    } else if (pg.CurrentPageNumber > pg.PageCount) {
+        pg.CurrentPageNumber = pg.PageCount;
+    }
+
+    //
+    if (pg.CurrentPageNumber > (pg.RangeLen/2)) {
+        pg.RangeStartNumber = pg.CurrentPageNumber - pg.RangeLen/2;
+    }
+
+    pg.RangeEndNumber = pg.PageCount;
+    if ((pg.RangeStartNumber + pg.RangeLen) < pg.PageCount) {
+        pg.RangeEndNumber = pg.RangeStartNumber + pg.RangeLen - 1;
+    }
+
+    // taking previous page
+    if (pg.CurrentPageNumber > 1) {
+        pg.PrevPageNumber = pg.CurrentPageNumber - 1;
+    }
+
+    // taking next page
+    if (pg.CurrentPageNumber < pg.PageCount) {
+        pg.NextPageNumber = pg.CurrentPageNumber + 1;
+    }
+
+    // taking pages list
+    for (var i = pg.RangeStartNumber; i <= pg.RangeEndNumber; i++) {
+        pg.RangePages.push(i);
+    }
+
+    if (pg.RangeStartNumber > 1) {
+        pg.FirstPageNumber = 1;
+    }
+
+    if (pg.RangeEndNumber < pg.PageCount) {
+        pg.LastPageNumber = pg.PageCount;
+    }
+
+    return pg;
+}
 
 l4i.PosGet = function()
 {
@@ -122,8 +257,8 @@ l4i.UriQuery = function()
     var query = window.location.search.substring(1);
     var vars = query.split("&");
     
-    for (var i=0;i<vars.length;i++) {
-    
+    for (var i = 0; i < vars.length; i++) {
+
         var pair = vars[i].split("=");
     
         // If first entry with this name
@@ -147,6 +282,61 @@ l4i.StringTrim = function(str, chr)
     var re = (!chr) ? new RegExp('^\\s+|\\s+$', 'g') : new RegExp('^'+chr+'+|'+chr+'+$', 'g');
     return str.replace(re, '');
 }
+
+l4iAlert = {}
+
+l4iAlert.Close = function(msg)
+{
+    $("#l4i-alert").remove();
+    $("#l4i-modal-bg").remove();
+}
+
+l4iAlert.Error = function(msg)
+{
+    var ctn = '<div id="l4i-alert" class="alert alert-danger" style="position: absolute;display:none">\
+        <button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>\
+        <span id="l4i-alert-msg"></span>\
+        </div>';
+
+    $("#l4i-alert").remove();
+    $("body").append(ctn);   
+
+    var bw = $(window).width(), bh = $(window).height();
+    var width = bw / 2;
+    if (width < 200) {
+        width = 200;
+    } else if (width > 900) {
+        width = 900;
+    }
+
+    var left = bw / 2 - width / 2;
+    var top = 30;
+    
+    if (left > (bw - width)) {
+        left = bw - width;
+    }
+
+    $("#l4i-alert").css({
+        "width"     : width +"px",
+        "min-height": "30px",
+    });
+    $("#l4i-alert-msg").text(msg);
+
+    if (!$('#l4i-modal-bg').is(':visible')) {
+        $("#l4i-modal-bg").remove();
+        $("body").append('<div id="l4i-modal-bg" class="less-hide"></div>');
+        $("#l4i-modal-bg").fadeIn(150);                
+    }
+
+    $("#l4i-alert").css({
+        "z-index"   : 2000,
+        "top"       : top +'px',
+        "left"      : left +'px',            
+    }).hide().slideDown(100, function() {
+
+    });
+}
+
 
 // Modal Version 2.x
 var l4iModal = {
@@ -214,7 +404,7 @@ l4iModal.Open = function(options)
     l4iModal.switch(options.id);
 }
 
-l4iModal.switch = function(modalid)
+l4iModal.switch = function(modalid, cb)
 {
     var options = l4iModal.data[modalid];
     if (options.id === undefined) {
@@ -459,7 +649,15 @@ l4iModal.switch = function(modalid)
         $("#"+ modalid+" .inputfocus").focus();
 
         l4iModal.Resize();
-        options.success();
+
+        if (options.success) {
+            options.success();
+            l4iModal.data[options.id].success = null;
+        }        
+
+        if (cb) {
+            cb();
+        }
     });
 
     l4iModal.current = options.id;
@@ -484,12 +682,12 @@ l4iModal.PrevId = function()
     return null;
 }
 
-l4iModal.Prev = function()
+l4iModal.Prev = function(cb)
 {
     var previd = l4iModal.PrevId();
     if (previd != null) {
         // l4iModal.nextHistory = l4iModal.current;
-        l4iModal.switch(previd); 
+        l4iModal.switch(previd, cb);
     }
 }
 
@@ -815,11 +1013,14 @@ l4iTemplate.RenderFromID = function(idto, idfrom, data)
     if (!elem) {
         return "";
     }
+    var source = elem.value || elem.innerHTML;
 
-    var source = elem.value || elem.innerHTML;    
-    var tempFn = doT.template(source);
-
-    $("#"+ idto).html(tempFn(data));
+    if (data) {
+        var tempFn = doT.template(source);
+        $("#"+ idto).html(tempFn(data));
+    } else {
+        $("#"+ idto).html(source);
+    }
     // var elemto = document.getElementById(idto);
     // if (elemto) {
     //     elemto.innerHTML = tempFn(data);
@@ -961,25 +1162,7 @@ l4iTemplate.Render = function(options)
 }
 
 
-var lessPagelet = {};
-lessPagelet.Render = function(data, tpl, elemid)
-{
-    var elem = document.getElementById(elemid);
-    if (!elem) {
-        return "";
-    }
-
-    // TODO cache template
-    $.ajax({
-        url     : "/lesscreator/" + tpl,
-        type    : "GET",
-        timeout : 10000,
-        success : function(rsp) {
-            elem.innerHTML = doT.template(rsp)(data);
-        }
-    });
-}
-
+//
 var l4iString = {
 
 };
