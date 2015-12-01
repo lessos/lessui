@@ -285,16 +285,39 @@ l4i.StringTrim = function(str, chr)
 
 l4iAlert = {}
 
-l4iAlert.Close = function(msg)
+l4iAlert.Open = function(type, msg, options)
 {
-    $("#l4i-alert").remove();
-    $("#l4i-modal-bg").remove();
-}
+    options = options || {};
 
-l4iAlert.Error = function(msg)
-{
-    var ctn = '<div id="l4i-alert" class="alert alert-danger" style="position: absolute;display:none">\
-        <button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>\
+    if (!options.type) {
+        options.type = "info";
+    }
+
+    if (options.close === undefined) {
+        options.close = true;
+    }
+
+    var type_ui = "info";
+    switch (type) {
+    case "ok":
+        type_ui = "success";
+        break;
+    case "error":
+        type_ui = "danger";
+        break;
+    case "warn":
+        type_ui = "warning";
+        break;
+    default:
+        type_ui = "info";
+    }
+
+    var close_ctn = "";
+    if (options.close) {
+        close_ctn = '<button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>';
+    }
+    var ctn = '<div id="l4i-alert" class="alert alert-'+type_ui+'" style="position: absolute;display:none">\
+        '+close_ctn+'\
         <span id="l4i-alert-msg"></span>\
         </div>';
 
@@ -335,6 +358,17 @@ l4iAlert.Error = function(msg)
     }).hide().slideDown(100, function() {
 
     });
+}
+
+l4iAlert.Close = function(msg)
+{
+    $("#l4i-alert").remove();
+    $("#l4i-modal-bg").remove();
+}
+
+l4iAlert.Error = function(msg)
+{
+    l4iAlert.Open("error", msg);
 }
 
 
@@ -652,8 +686,11 @@ l4iModal.switch = function(modalid, cb)
 
         if (options.success) {
             options.success();
-            l4iModal.data[options.id].success = null;
-        }        
+            
+            if (prev = l4iModal.data[modalid]) {
+                l4iModal.data[modalid].success = null;
+            }
+        }
 
         if (cb) {
             cb();
@@ -724,15 +761,22 @@ l4iModal.Resize = function()
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
 
-l4iModal.Close = function()
+l4iModal.Close = function(cb)
 {
+    if (!l4iModal.current) {
+        if (cb) {
+            cb();
+        }
+        return;
+    }
+
     $("#l4i-modal").slideUp(100, function() {
         l4iModal.data = {};
         l4iModal.current = null;
         l4iModal.CurOptions = null;
         $("#l4i-modal").remove();
-    });
-    $("#l4i-modal-bg").fadeOut(150); 
+        $("#l4i-modal-bg").fadeOut(150, cb);
+    });    
 }
 
 l4iModal.ScrollTop = function()
