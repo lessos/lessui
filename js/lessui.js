@@ -316,9 +316,16 @@ l4iAlert.Open = function(type, msg, options)
     if (options.close) {
         close_ctn = '<button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>';
     }
+
+    var btn_ctn = "";
+    if (options.buttons && options.buttons.length > 0) {
+        btn_ctn = '<div style="margin:20px 0 0 0">'+ l4iModal.buttonRender(options.buttons) +"</div>";
+    }
+
     var ctn = '<div id="l4i-alert" class="alert alert-'+type_ui+'" style="position: absolute;display:none">\
-        '+close_ctn+'\
+        '+ close_ctn +'\
         <span id="l4i-alert-msg"></span>\
+        '+ btn_ctn +'\
         </div>';
 
     $("#l4i-alert").remove();
@@ -360,10 +367,14 @@ l4iAlert.Open = function(type, msg, options)
     });
 }
 
-l4iAlert.Close = function(msg)
+l4iAlert.Close = function(cb)
 {
     $("#l4i-alert").remove();
     $("#l4i-modal-bg").remove();
+
+    if (cb) {
+        cb();
+    }
 }
 
 l4iAlert.Error = function(msg)
@@ -789,7 +800,7 @@ var l4iCookie = {
     
 };
 
-l4iCookie.Set = function(key, val, sec)
+l4iCookie.Set = function(key, val, sec, path)
 {
     var expires = "";
     
@@ -798,13 +809,17 @@ l4iCookie.Set = function(key, val, sec)
         date.setTime(date.getTime() + (sec * 1000));
         expires = "; expires=" + date.toGMTString();
     }
+
+    if (!path) {
+        path = "/";
+    }
     
-    document.cookie = key + "=" + val + expires + "; path=/";
+    document.cookie = key + "=" + val + expires + "; path="+ path;
 }
 
-l4iCookie.SetByDay = function(key, val, day)
+l4iCookie.SetByDay = function(key, val, day, path)
 {
-    l4iCookie.Set(key, val, day * 86400);
+    l4iCookie.Set(key, val, day * 86400, path);
 }
 
 l4iCookie.Get = function(key)
@@ -823,9 +838,9 @@ l4iCookie.Get = function(key)
     return null;
 }
 
-l4iCookie.Del = function(key)
+l4iCookie.Del = function(key, path)
 {
-    l4iCookie.Set(key, "", -1);
+    l4iCookie.Set(key, "", -1, path);
 }
 
 //
