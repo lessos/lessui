@@ -235,6 +235,23 @@ Date.prototype.l4iTimeFormat = function(format)
     });
 }
 
+// http://tools.ietf.org/html/rfc2822#page-14
+// ISO 8601
+l4i.MetaTimeParseFormat = function(time, format)
+{
+    time = "" + time;
+    if (time.length < 17) {
+        return (new Date()).l4iTimeFormat(format);
+    }
+
+    var ut = Date.UTC(time.substr(0,4), time.substr(4,2), time.substr(6,2), time.substr(8,2), time.substr(10,2), time.substr(12,2));
+    if (!ut) {
+        return (new Date()).l4iTimeFormat(format);
+    }
+
+    return (new Date(ut)).l4iTimeFormat(format);
+}
+
 l4i.TimeParseFormat = function(time, format)
 {
     if (!time) {
