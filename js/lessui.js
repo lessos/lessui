@@ -1,6 +1,7 @@
 var l4i = {
     pos : {x : 0, y : 0},
     urlevs : {},
+    urlevc : null,
 }
 
 $(document).ready(function() { 
@@ -13,11 +14,10 @@ $(document).ready(function() {
         });
     }
 
-    $(document).on("click", "a.l4i-nav-item", function() {
-        $(this).parent().find("a.active").removeClass("active");
-        $(this).addClass("active");
-
-        l4i.UrlEventHandler($(this).attr("href"));
+    $(document).on("click", ".l4i-nav-item", function() {
+        // $(this).closest("ul").find("a.active").removeClass("active");
+        // $(this).addClass("active");
+        l4i.UrlEventHandler($(this));
     });
 
     // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
@@ -32,25 +32,66 @@ $(document).ready(function() {
     // }
 });
 
-l4i.UrlEventRegister = function(name, func)
+l4i.UrlEventRegister = function(name, func, pid)
 {
     if (!name || typeof name != "string" || !func || typeof func != "function") {
         return;
     }
 
-    l4i.urlevs[name] = func;
+    l4i.urlevs[name] = {
+        func: func,
+        pid : pid,
+    };
 }
 
-l4i.UrlEventHandler = function(name)
+l4i.UrlEventHandler = function(nav_target)
 {
-    name = name.replace("#", "");
+    var nav_name = "";
+    if (typeof nav_target == "string") {
+        nav_name = nav_target.replace("#", "");
+        nav_target = $("body").find("a[href='#"+ nav_name +"']");
+    }
+
+    if (typeof nav_target != "object") {
+        return;
+    }
+
+    if (nav_name.length < 1) {
+        nav_name = nav_target.attr("href").replace("#", "");
+    }
+
+    if (nav_name == l4i.urlevc) {
+        return;
+    }
+
+    // $(this).closest("ul").find("a.active").removeClass("active");
+    // $(this).addClass("active");
+
+    // nav_target
+
+    // name = name.replace("#", "");
     // var name = location.hash.replace("#", "");
     // if (!name) {
     //     return;
     // }
 
-    if (l4i.urlevs[name]) {
-        l4i.urlevs[name]();    
+    if (l4i.urlevs[nav_name]) {
+
+        l4i.urlevs[nav_name].func(nav_name);
+        l4i.urlevc = nav_name;
+
+        if (l4i.urlevs[nav_name].pid) {
+            var elem = $("#"+ l4i.urlevs[nav_name].pid);
+            if (elem) {
+                elem.find(".active:first").removeClass("active");
+                // elem.find("a[href='#"+ nav_name +"']").addClass("active");
+                nav_target.addClass("active");
+            }
+        } else {
+            // nav_name.closest("ul").find("a.active:first").removeClass("active");
+            nav_target.parent().find(".active:first").removeClass("active");
+            nav_target.addClass("active");
+        }
     }
 }
 
@@ -1142,14 +1183,19 @@ l4iTemplate.Render = function(options)
 
         if (options.data !== undefined) {
             var tempFn = doT.template(options.tplsrc);
-            if (options.append) {
+
+            if (options.prepend) {
+                $("#"+ options.dstid).prepend(tempFn(options.data));
+            } else if (options.append) {
                 $("#"+ options.dstid).append(tempFn(options.data));
             } else {
                 $("#"+ options.dstid).html(tempFn(options.data));
             }
             
         } else {
-            if (options.append) {
+            if (options.prepend) {
+                $("#"+ options.dstid).prepend(options.tplsrc);
+            } else if (options.append) {
                 $("#"+ options.dstid).append(options.tplsrc);
             } else {
                 $("#"+ options.dstid).html(options.tplsrc);
@@ -1176,7 +1222,9 @@ l4iTemplate.Render = function(options)
             
             var tempFn = doT.template(source);
             
-            if (options.append) {
+            if (options.prepend) {
+                $("#"+ options.dstid).prepend(tempFn(options.data));
+            } else if (options.append) {
                 $("#"+ options.dstid).append(tempFn(options.data));
             } else {
                 $("#"+ options.dstid).html(tempFn(options.data));
@@ -1184,7 +1232,9 @@ l4iTemplate.Render = function(options)
 
         } else {
 
-            if (options.append) {
+            if (options.prepend) {
+                $("#"+ options.dstid).prepend(source);
+            } else if (options.append) {
                 $("#"+ options.dstid).append(source);
             } else {
                 $("#"+ options.dstid).html(source);
@@ -1214,14 +1264,18 @@ l4iTemplate.Render = function(options)
     
                 if (options.data !== undefined) {
                     var tempFn = doT.template(rsp);
-                    if (options.append) {
+                    if (options.prepend) {
+                        $("#"+ options.dstid).prepend(tempFn(options.data));
+                    } else if (options.append) {
                         $("#"+ options.dstid).append(tempFn(options.data));
                     } else {
                         $("#"+ options.dstid).html(tempFn(options.data));
                     }
                 } else {
                     
-                    if (options.append) {
+                    if (options.prepend) {
+                        $("#"+ options.dstid).prepend(rsp);
+                    } else if (options.append) {
                         $("#"+ options.dstid).append(rsp);
                     } else {
                         $("#"+ options.dstid).html(rsp);
