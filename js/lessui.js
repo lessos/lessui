@@ -276,6 +276,23 @@ Date.prototype.l4iTimeFormat = function(format)
     });
 }
 
+// http://tools.ietf.org/html/rfc2822#page-14
+// ISO 8601
+l4i.MetaTimeParseFormat = function(time, format)
+{
+    time = "" + time;
+    if (time.length < 17) {
+        return (new Date()).l4iTimeFormat(format);
+    }
+
+    var ut = Date.UTC(time.substr(0,4), time.substr(4,2), time.substr(6,2), time.substr(8,2), time.substr(10,2), time.substr(12,2));
+    if (!ut) {
+        return (new Date()).l4iTimeFormat(format);
+    }
+
+    return (new Date(ut)).l4iTimeFormat(format);
+}
+
 l4i.TimeParseFormat = function(time, format)
 {
     if (!time) {
@@ -326,17 +343,47 @@ l4i.StringTrim = function(str, chr)
 
 l4iAlert = {}
 
-l4iAlert.Close = function(msg)
+l4iAlert.Open = function(type, msg, options)
 {
-    $("#l4i-alert").remove();
-    $("#l4i-modal-bg").remove();
-}
+    options = options || {};
 
-l4iAlert.Error = function(msg)
-{
-    var ctn = '<div id="l4i-alert" class="alert alert-danger" style="position: absolute;display:none">\
-        <button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>\
+    if (!options.type) {
+        options.type = "info";
+    }
+
+    if (options.close === undefined) {
+        options.close = true;
+    }
+
+    var type_ui = "info";
+    switch (type) {
+    case "ok":
+        type_ui = "success";
+        break;
+    case "error":
+        type_ui = "danger";
+        break;
+    case "warn":
+        type_ui = "warning";
+        break;
+    default:
+        type_ui = "info";
+    }
+
+    var close_ctn = "";
+    if (options.close) {
+        close_ctn = '<button type="button" class="close" onclick="l4iAlert.Close()"><span aria-hidden="true">&times;</span></button>';
+    }
+
+    var btn_ctn = "";
+    if (options.buttons && options.buttons.length > 0) {
+        btn_ctn = '<div style="margin:20px 0 0 0">'+ l4iModal.buttonRender(options.buttons) +"</div>";
+    }
+
+    var ctn = '<div id="l4i-alert" class="alert alert-'+type_ui+'" style="position: absolute;display:none">\
+        '+ close_ctn +'\
         <span id="l4i-alert-msg"></span>\
+        '+ btn_ctn +'\
         </div>';
 
     $("#l4i-alert").remove();
@@ -376,6 +423,21 @@ l4iAlert.Error = function(msg)
     }).hide().slideDown(100, function() {
 
     });
+}
+
+l4iAlert.Close = function(cb)
+{
+    $("#l4i-alert").remove();
+    $("#l4i-modal-bg").remove();
+
+    if (cb) {
+        cb();
+    }
+}
+
+l4iAlert.Error = function(msg)
+{
+    l4iAlert.Open("error", msg);
 }
 
 
@@ -693,8 +755,11 @@ l4iModal.switch = function(modalid, cb)
 
         if (options.success) {
             options.success();
-            l4iModal.data[options.id].success = null;
-        }        
+            
+            if (prev = l4iModal.data[modalid]) {
+                l4iModal.data[modalid].success = null;
+            }
+        }
 
         if (cb) {
             cb();
@@ -765,15 +830,22 @@ l4iModal.Resize = function()
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
 
-l4iModal.Close = function()
+l4iModal.Close = function(cb)
 {
+    if (!l4iModal.current) {
+        if (cb) {
+            cb();
+        }
+        return;
+    }
+
     $("#l4i-modal").slideUp(100, function() {
         l4iModal.data = {};
         l4iModal.current = null;
         l4iModal.CurOptions = null;
         $("#l4i-modal").remove();
-    });
-    $("#l4i-modal-bg").fadeOut(150); 
+        $("#l4i-modal-bg").fadeOut(150, cb);
+    });    
 }
 
 l4iModal.ScrollTop = function()
@@ -786,7 +858,7 @@ var l4iCookie = {
     
 };
 
-l4iCookie.Set = function(key, val, sec)
+l4iCookie.Set = function(key, val, sec, path)
 {
     var expires = "";
     
@@ -795,13 +867,17 @@ l4iCookie.Set = function(key, val, sec)
         date.setTime(date.getTime() + (sec * 1000));
         expires = "; expires=" + date.toGMTString();
     }
+
+    if (!path) {
+        path = "/";
+    }
     
-    document.cookie = key + "=" + val + expires + "; path=/";
+    document.cookie = key + "=" + val + expires + "; path="+ path;
 }
 
-l4iCookie.SetByDay = function(key, val, day)
+l4iCookie.SetByDay = function(key, val, day, path)
 {
-    l4iCookie.Set(key, val, day * 86400);
+    l4iCookie.Set(key, val, day * 86400, path);
 }
 
 l4iCookie.Get = function(key)
@@ -820,9 +896,9 @@ l4iCookie.Get = function(key)
     return null;
 }
 
-l4iCookie.Del = function(key)
+l4iCookie.Del = function(key, path)
 {
-    l4iCookie.Set(key, "", -1);
+    l4iCookie.Set(key, "", -1, path);
 }
 
 //
