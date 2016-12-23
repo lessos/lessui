@@ -244,7 +244,7 @@ l4i.MetaTimeParseFormat = function(time, format)
         return (new Date()).l4iTimeFormat(format);
     }
 
-    var ut = Date.UTC(time.substr(0,4), time.substr(4,2), time.substr(6,2), time.substr(8,2), time.substr(10,2), time.substr(12,2));
+    var ut = Date.UTC(time.substr(0,4), parseInt(time.substr(4,2)) - 1, time.substr(6,2), time.substr(8,2), time.substr(10,2), time.substr(12,2));
     if (!ut) {
         return (new Date()).l4iTimeFormat(format);
     }
