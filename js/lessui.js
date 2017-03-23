@@ -1171,6 +1171,11 @@ l4iTemplate.Render = function(options)
     }
 
     if (options.dstid === undefined) {
+
+        if (typeof options.callback === "function") {
+            options.callback("dstid can not found", null);
+        }
+
         options.error(400, "dstid can not be null");
         return;
     }
@@ -1202,12 +1207,21 @@ l4iTemplate.Render = function(options)
             }
         }
 
+        if (typeof options.callback === "function") {
+            options.callback(null, null);
+        }
+
         options.success();
 
     } else if (options.tplid !== undefined) {
 
         var elem = document.getElementById(options.tplid);
         if (!elem) {
+
+            if (typeof options.callback === "function") {
+                options.callback("tplid can not found", null);
+            }
+
             options.error(400, "tplid can not found");
             return;
         }
@@ -1241,6 +1255,10 @@ l4iTemplate.Render = function(options)
             }
         }
 
+        if (typeof options.callback === "function") {
+            options.callback(null, null);
+        }
+
         options.success();
 
     } else if (options.tplurl !== undefined) {
@@ -1261,7 +1279,7 @@ l4iTemplate.Render = function(options)
                 if (options.i18n) {
                     rsp = l4i.TR(rsp);
                 }
-    
+
                 if (options.data !== undefined) {
                     var tempFn = doT.template(rsp);
                     if (options.prepend) {
@@ -1281,7 +1299,11 @@ l4iTemplate.Render = function(options)
                         $("#"+ options.dstid).html(rsp);
                     }
                 }
-    
+
+                if (typeof options.callback === "function") {
+                    options.callback(null, null);
+                }
+
                 options.success();
             },
             error : function() {
@@ -1728,3 +1750,46 @@ function _sprintf()
   return format.replace(regex, doFormat);
 }
 
+
+l4i.Ajax = function(url, options)
+{
+    options = options || {};
+
+    //
+    if (l4i.debug) {
+        if (/\?/.test(url)) {
+            url += "&_=";
+        } else {
+            url += "?_=";
+        }
+        url += Math.random();
+    }
+
+    //
+    if (!options.method) {
+        options.method = "GET";
+    }
+
+    //
+    if (!options.timeout) {
+        options.timeout = 10000;
+    }
+
+    //
+    $.ajax({
+        url     : url,
+        type    : options.method,
+        data    : options.data,
+        timeout : options.timeout,
+        success : function(rsp) {
+            if (typeof options.callback === "function") {
+                options.callback(null, rsp);
+            }
+        },
+        error: function(xhr, textStatus, error) {
+            if (typeof options.callback === "function") {
+                options.callback(xhr.responseText, null);
+            }
+        }
+    });
+}
