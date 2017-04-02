@@ -3,7 +3,7 @@
       "name":"lessui"
   },
   "summary":"lessOS Web UI",
-  "version":"0.1.3.dev",
+  "version":"1.0.0",
   "release":"1",
   "grp_dev": "60"
 }
