@@ -44,6 +44,19 @@ l4i.UrlEventRegister = function(name, func, pid)
     };
 }
 
+l4i.UrlEventClean = function(pid)
+{
+    if (!pid) {
+        return;
+    }
+
+    for (var i in l4i.urlevs) {
+        if (pid == l4i.urlevs[i].pid) {
+            delete l4i.urlevs[i];
+        }
+    }
+}
+
 l4i.UrlEventHandler = function(nav_target, auto_prev)
 {
     var nav_name = "";
