@@ -1796,7 +1796,7 @@ l4i.Ajax = function(url, options)
     options = options || {};
 
     //
-    if (l4i.debug) {
+    if (l4i.debug || options.nocache) {
         if (/\?/.test(url)) {
             url += "&_=";
         } else {
