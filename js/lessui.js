@@ -1,7 +1,10 @@
 var l4i = {
-    pos : {x : 0, y : 0},
-    urlevs : {},
-    urlevc : null,
+    pos: {
+        x: 0,
+        y: 0
+    },
+    urlevs: {},
+    urlevc: null,
 }
 
 $(document).ready(function() {
@@ -20,32 +23,30 @@ $(document).ready(function() {
         l4i.UrlEventHandler($(this));
     });
 
-    // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
-    //     window.onhashchange = l4i.UrlEventHandler;
-    // } else {
-    //     setInterval(function() {
-    //         var ischanged = l4i.urlEventChanged();
-    //         if (ischanged) {
-    //             l4i.UrlEventHandler();
-    //         }
-    //     }, 150);
-    // }
+// if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
+//     window.onhashchange = l4i.UrlEventHandler;
+// } else {
+//     setInterval(function() {
+//         var ischanged = l4i.urlEventChanged();
+//         if (ischanged) {
+//             l4i.UrlEventHandler();
+//         }
+//     }, 150);
+// }
 });
 
-l4i.UrlEventRegister = function(name, func, pid)
-{
+l4i.UrlEventRegister = function(name, func, pid) {
     if (!name || typeof name != "string" || !func || typeof func != "function") {
         return;
     }
 
     l4i.urlevs[name] = {
         func: func,
-        pid : pid,
+        pid: pid,
     };
 }
 
-l4i.UrlEventClean = function(pid)
-{
+l4i.UrlEventClean = function(pid) {
     if (!pid) {
         return;
     }
@@ -57,12 +58,11 @@ l4i.UrlEventClean = function(pid)
     }
 }
 
-l4i.UrlEventHandler = function(nav_target, auto_prev)
-{
+l4i.UrlEventHandler = function(nav_target, auto_prev) {
     var nav_name = "";
     if (typeof nav_target == "string") {
         nav_name = nav_target.replace("#", "");
-        nav_target = $("body").find("a[href='#"+ nav_name +"']");
+        nav_target = $("body").find("a[href='#" + nav_name + "']");
     }
 
     if (typeof nav_target != "object") {
@@ -93,12 +93,12 @@ l4i.UrlEventHandler = function(nav_target, auto_prev)
         if (l4i.urlevs[nav_name].pid) {
 
             if (auto_prev) {
-                var nav_prev = l4iStorage.Get("lui_"+ l4i.urlevs[nav_name].pid);
+                var nav_prev = l4iStorage.Get("lui_" + l4i.urlevs[nav_name].pid);
                 if (nav_prev) {
                     if (l4i.urlevs[nav_prev]) {
                         l4i.urlevs[nav_prev].func(nav_prev);
                         l4i.urlevc = nav_prev;
-                        var prev_tg = $("body").find("a[href='#"+ nav_prev +"']");
+                        var prev_tg = $("body").find("a[href='#" + nav_prev + "']");
                         if (prev_tg) {
                             prev_tg.parent().find(".active:first").removeClass("active");
                             prev_tg.addClass("active");
@@ -108,12 +108,12 @@ l4i.UrlEventHandler = function(nav_target, auto_prev)
                 }
             }
 
-            var elem = $("#"+ l4i.urlevs[nav_name].pid);
+            var elem = $("#" + l4i.urlevs[nav_name].pid);
             if (elem) {
                 elem.find(".active:first").removeClass("active");
                 // elem.find("a[href='#"+ nav_name +"']").addClass("active");
                 nav_target.addClass("active");
-                l4iStorage.Set("lui_"+ l4i.urlevs[nav_name].pid, nav_name);
+                l4iStorage.Set("lui_" + l4i.urlevs[nav_name].pid, nav_name);
             }
         } else {
             // nav_name.closest("ul").find("a.active:first").removeClass("active");
@@ -126,13 +126,11 @@ l4i.UrlEventHandler = function(nav_target, auto_prev)
     }
 }
 
-l4i.urlEventChanged = function()
-{
+l4i.urlEventChanged = function() {
     return false;
 }
 
-l4i.Pager = function(metalist)
-{
+l4i.Pager = function(metalist) {
     if (!metalist.startIndex) {
         metalist.startIndex = 0;
     }
@@ -154,18 +152,18 @@ l4i.Pager = function(metalist)
     }
 
     var pg = {
-        ItemCount:         metalist.totalResults,
-        CountPerPage:      metalist.itemsPerList,
-        PageCount:         0,
+        ItemCount: metalist.totalResults,
+        CountPerPage: metalist.itemsPerList,
+        PageCount: 0,
         CurrentPageNumber: 0,
-        FirstPageNumber:   0,
-        PrevPageNumber:    0,
-        NextPageNumber:    0,
-        LastPageNumber:    0,
-        RangeLen:          metalist.RangeLen,
-        RangeStartNumber:  1,
-        RangeEndNumber:    0,
-        RangePages:        [],
+        FirstPageNumber: 0,
+        PrevPageNumber: 0,
+        NextPageNumber: 0,
+        LastPageNumber: 0,
+        RangeLen: metalist.RangeLen,
+        RangeStartNumber: 1,
+        RangeEndNumber: 0,
+        RangePages: [],
     }
 
     if (metalist.startIndex > 0) {
@@ -185,8 +183,8 @@ l4i.Pager = function(metalist)
     }
 
     //
-    if (pg.CurrentPageNumber > (pg.RangeLen/2)) {
-        pg.RangeStartNumber = pg.CurrentPageNumber - pg.RangeLen/2;
+    if (pg.CurrentPageNumber > (pg.RangeLen / 2)) {
+        pg.RangeStartNumber = pg.CurrentPageNumber - pg.RangeLen / 2;
     }
 
     pg.RangeEndNumber = pg.PageCount;
@@ -220,43 +218,44 @@ l4i.Pager = function(metalist)
     return pg;
 }
 
-l4i.PosGet = function()
-{
+l4i.PosGet = function() {
     var pos = null;
 
     if (window.event) {
-        pos = {"left": window.event.pageX, "top": window.event.pageY};
+        pos = {
+            "left": window.event.pageX,
+            "top": window.event.pageY
+        };
     } else {
-        pos = {"left": l4i.pos.x, "top": l4i.pos.y};
+        pos = {
+            "left": l4i.pos.x,
+            "top": l4i.pos.y
+        };
     }
 
     return pos;
 }
 
-l4i.InnerAlert = function(obj, type, msg)
-{
+l4i.InnerAlert = function(obj, type, msg) {
     if (type == "") {
         $(obj).hide();
     } else {
-        $(obj).removeClass().addClass("alert "+ type).html(msg).fadeOut(200).fadeIn(200);
+        $(obj).removeClass().addClass("alert " + type).html(msg).fadeOut(200).fadeIn(200);
     }
 }
 
 // TODO i18n
-l4i.T = function()
-{
+l4i.T = function() {
     return _sprintf.apply(this, arguments);
 }
 
-l4i.TR = function(text)
-{
-    return text.replace(/{%([^%}]+)?%}/g, function(key){
+l4i.TR = function(text) {
+    return text.replace(/{%([^%}]+)?%}/g, function(key) {
         return _sprintf.call(this, key.replace(/[{%%}]+/g, ""));
     });
 }
 
-l4i.Clone = function(obj)
-{
+l4i.Clone = function(obj) {
     var copy;
 
     if (null == obj || typeof obj != "object") {
@@ -282,25 +281,36 @@ l4i.Clone = function(obj)
 
 l4i.timeChars = {
     // Year
-    Y: function() { return this.getFullYear(); },
+    Y: function() {
+        return this.getFullYear();
+    },
     // Month
-    m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
+    m: function() {
+        return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1);
+    },
     // Day
-    d: function() { return (this.getDate() < 10 ? '0' : '') + this.getDate(); },
+    d: function() {
+        return (this.getDate() < 10 ? '0' : '') + this.getDate();
+    },
     // Hour
-    H: function() { return (this.getHours() < 10 ? '0' : '') + this.getHours(); },
+    H: function() {
+        return (this.getHours() < 10 ? '0' : '') + this.getHours();
+    },
     // Minute
-    i: function() { return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes(); },
+    i: function() {
+        return (this.getMinutes() < 10 ? '0' : '') + this.getMinutes();
+    },
     // Second
-    s: function() { return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds(); },
+    s: function() {
+        return (this.getSeconds() < 10 ? '0' : '') + this.getSeconds();
+    },
     u: function() {
         var m = this.getMilliseconds();
         return (m < 10 ? '00' : (m < 100 ? '0' : '')) + m;
     },
 }
 
-Date.prototype.l4iTimeFormat = function(format)
-{
+Date.prototype.l4iTimeFormat = function(format) {
     var date = this;
     return format.replace(/(\\?)(.)/g, function(_, esc, chr) {
         return (esc === '' && l4i.timeChars[chr]) ? l4i.timeChars[chr].call(date) : chr;
@@ -309,14 +319,13 @@ Date.prototype.l4iTimeFormat = function(format)
 
 // http://tools.ietf.org/html/rfc2822#page-14
 // ISO 8601
-l4i.MetaTimeParseFormat = function(time, format)
-{
+l4i.MetaTimeParseFormat = function(time, format) {
     time = "" + time;
     if (time.length < 17) {
         return (new Date()).l4iTimeFormat(format);
     }
 
-    var ut = Date.UTC(time.substr(0,4), parseInt(time.substr(4,2)) - 1, time.substr(6,2), time.substr(8,2), time.substr(10,2), time.substr(12,2));
+    var ut = Date.UTC(time.substr(0, 4), parseInt(time.substr(4, 2)) - 1, time.substr(6, 2), time.substr(8, 2), time.substr(10, 2), time.substr(12, 2));
     if (!ut) {
         return (new Date()).l4iTimeFormat(format);
     }
@@ -324,22 +333,28 @@ l4i.MetaTimeParseFormat = function(time, format)
     return (new Date(ut)).l4iTimeFormat(format);
 }
 
-l4i.TimeParseFormat = function(time, format)
-{
+l4i.TimeParseFormat = function(time, format) {
     if (!time) {
         return (new Date()).l4iTimeFormat(format);
     }
 
     var tn = Date.parse(time);
     if (!tn) {
-        tn = Date.parse(time.replace(/\-/g,"/"));
+        tn = Date.parse(time.replace(/\-/g, "/"));
     }
 
     return (new Date(tn)).l4iTimeFormat(format);
 }
 
-l4i.UriQuery = function()
-{
+l4i.UnixTimeFormat = function(time, format) {
+    if (!time) {
+        return "";
+    }
+
+    return (new Date(time * 1000)).l4iTimeFormat(format);
+}
+
+l4i.UriQuery = function() {
     // This function is anonymous, is executed immediately and
     // the return value is assigned to l4i.UriQuery!
     var query_string = {};
@@ -355,7 +370,7 @@ l4i.UriQuery = function()
             query_string[pair[0]] = pair[1];
         // If second entry with this name
         } else if (typeof query_string[pair[0]] === "string") {
-            var arr = [ query_string[pair[0]], pair[1] ];
+            var arr = [query_string[pair[0]], pair[1]];
             query_string[pair[0]] = arr;
         // If third or later entry with this name
         } else {
@@ -366,16 +381,14 @@ l4i.UriQuery = function()
     return query_string;
 }
 
-l4i.StringTrim = function(str, chr)
-{
-    var re = (!chr) ? new RegExp('^\\s+|\\s+$', 'g') : new RegExp('^'+chr+'+|'+chr+'+$', 'g');
+l4i.StringTrim = function(str, chr) {
+    var re = (!chr) ? new RegExp('^\\s+|\\s+$', 'g') : new RegExp('^' + chr + '+|' + chr + '+$', 'g');
     return str.replace(re, '');
 }
 
 l4iAlert = {}
 
-l4iAlert.Open = function(type, msg, options)
-{
+l4iAlert.Open = function(type, msg, options) {
     options = options || {};
 
     if (!options.type) {
@@ -388,17 +401,17 @@ l4iAlert.Open = function(type, msg, options)
 
     var type_ui = "info";
     switch (type) {
-    case "ok":
-        type_ui = "success";
-        break;
-    case "error":
-        type_ui = "danger";
-        break;
-    case "warn":
-        type_ui = "warning";
-        break;
-    default:
-        type_ui = "info";
+        case "ok":
+            type_ui = "success";
+            break;
+        case "error":
+            type_ui = "danger";
+            break;
+        case "warn":
+            type_ui = "warning";
+            break;
+        default:
+            type_ui = "info";
     }
 
     var close_ctn = "";
@@ -408,19 +421,20 @@ l4iAlert.Open = function(type, msg, options)
 
     var btn_ctn = "";
     if (options.buttons && options.buttons.length > 0) {
-        btn_ctn = '<div style="margin:20px 0 0 0">'+ l4iModal.buttonRender(options.buttons) +"</div>";
+        btn_ctn = '<div style="margin:20px 0 0 0">' + l4iModal.buttonRender(options.buttons) + "</div>";
     }
 
-    var ctn = '<div id="l4i-alert" class="alert alert-'+type_ui+'" style="position: absolute;display:none">\
-        '+ close_ctn +'\
+    var ctn = '<div id="l4i-alert" class="alert alert-' + type_ui + '" style="position: absolute;display:none">\
+        ' + close_ctn + '\
         <span id="l4i-alert-msg"></span>\
-        '+ btn_ctn +'\
+        ' + btn_ctn + '\
         </div>';
 
     $("#l4i-alert").remove();
     $("body").append(ctn);
 
-    var bw = $(window).width(), bh = $(window).height();
+    var bw = $(window).width(),
+        bh = $(window).height();
     var width = bw / 2;
     if (width < 200) {
         width = 200;
@@ -436,7 +450,7 @@ l4iAlert.Open = function(type, msg, options)
     }
 
     $("#l4i-alert").css({
-        "width"     : width +"px",
+        "width": width + "px",
         "min-height": "30px",
     });
     $("#l4i-alert-msg").text(msg);
@@ -448,16 +462,13 @@ l4iAlert.Open = function(type, msg, options)
     }
 
     $("#l4i-alert").css({
-        "z-index"   : 2000,
-        "top"       : top +'px',
-        "left"      : left +'px',
-    }).hide().slideDown(100, function() {
-
-    });
+        "z-index": 2000,
+        "top": top + 'px',
+        "left": left + 'px',
+    }).hide().slideDown(100, function() {});
 }
 
-l4iAlert.Close = function(cb)
-{
+l4iAlert.Close = function(cb) {
     $("#l4i-alert").remove();
     $("#l4i-modal-bg").remove();
 
@@ -466,34 +477,32 @@ l4iAlert.Close = function(cb)
     }
 }
 
-l4iAlert.Error = function(msg)
-{
+l4iAlert.Error = function(msg) {
     l4iAlert.Open("error", msg);
 }
 
 
 // Modal Version 2.x
 var l4iModal = {
-    version     : "2.0",
-    current     : null,
-    CurOptions  : null,
-    nextHistory : null,
-    width       : 600,
-    height      : 400,
-    position    : "center",
-    data        : {}
+    version: "2.0",
+    current: null,
+    CurOptions: null,
+    nextHistory: null,
+    width: 600,
+    height: 400,
+    position: "center",
+    data: {}
 };
 
-l4iModal.Open = function(options)
-{
+l4iModal.Open = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (!options.position) {
@@ -527,9 +536,9 @@ l4iModal.Open = function(options)
         l4iModal.data[l4iModal.current].nextModalId = options.id;
 
         options.buttons.unshift({
-            onclick : "l4iModal.Prev()",
-            title   : "Back",
-            style   : "btn-primary less-pull-left"
+            onclick: "l4iModal.Prev()",
+            title: "Back",
+            style: "btn-primary less-pull-left"
         });
     }
 
@@ -542,15 +551,14 @@ l4iModal.Open = function(options)
     }
 }
 
-l4iModal.switch = function(modalid, cb)
-{
+l4iModal.switch = function(modalid, cb) {
     var options = l4iModal.data[modalid];
     if (options.id === undefined) {
         return;
     }
 
     if (l4iModal.current == null) {
-        $("#"+ modalid).remove();
+        $("#" + modalid).remove();
     }
 
     var firstload = false;
@@ -573,23 +581,31 @@ l4iModal.switch = function(modalid, cb)
     }
 
     if (options.title !== undefined) {
-        $(".less-modal-header").css({"display" : "block"});
+        $(".less-modal-header").css({
+            "display": "block"
+        });
     } else {
-        $(".less-modal-header").css({"display" : "none"});
+        $(".less-modal-header").css({
+            "display": "none"
+        });
     }
 
     if (!options.close) {
-        $(".less-modal-header").find(".close").css({"display": "none"});
+        $(".less-modal-header").find(".close").css({
+            "display": "none"
+        });
     }
 
     var buttons = l4iModal.buttonRender(options.buttons);
     if (buttons.length > 10) {
-        $(".less-modal-footer").css({"display": "inline-block"});
+        $(".less-modal-footer").css({
+            "display": "inline-block"
+        });
     }
 
     if (!document.getElementById(modalid)) {
 
-        var body = "<div id='"+ modalid +"' class='less-modal-body-pagelet less_scroll'>";
+        var body = "<div id='" + modalid + "' class='less-modal-body-pagelet less_scroll'>";
 
         if (options.tplsrc !== undefined) {
 
@@ -627,11 +643,11 @@ l4iModal.switch = function(modalid, cb)
             options.tpluri += Math.random();
 
             $.ajax({
-                url     : options.tpluri,
-                type    : "GET",
-                timeout : 10000,
-                async   : false,
-                success : function(rsp) {
+                url: options.tpluri,
+                type: "GET",
+                timeout: 10000,
+                async: false,
+                success: function(rsp) {
                     // console.log(rsp);
                     if (options.data !== undefined) {
                         var tempFn = doT.template(rsp);
@@ -640,7 +656,7 @@ l4iModal.switch = function(modalid, cb)
                         body += rsp;
                     }
                 },
-                error : function() {
+                error: function() {
                     body += "Failed on load template";
                 }
             });
@@ -655,9 +671,9 @@ l4iModal.switch = function(modalid, cb)
         $("#less-modal-body-page").append(body);
     }
 
-    $("#"+ modalid).css({
-        "z-index" : "-100",
-        "display" : "block"
+    $("#" + modalid).css({
+        "z-index": "-100",
+        "display": "block"
     });
 
     if (!$("#l4i-modal").is(':visible')) {
@@ -680,20 +696,22 @@ l4iModal.switch = function(modalid, cb)
     var inlet_height = $('.less-modal-header').outerHeight(true) + $('.less-modal-footer').outerHeight(true) + 10;
 
     if (options.width < 1) {
-        options.width = $("#"+ modalid).outerWidth(true);
+        options.width = $("#" + modalid).outerWidth(true);
     }
     if (options.width < 200) {
         options.width = 200;
     }
     if (options.height < 1) {
-        options.height = $("#"+ modalid).outerHeight(true) + inlet_height;
+        options.height = $("#" + modalid).outerHeight(true) + inlet_height;
     }
     if (options.height < 100) {
         options.height = 100;
     }
 
-    var bw = $(window).width(), bh = $(window).height();
-    var top = 0, left = 0;
+    var bw = $(window).width(),
+        bh = $(window).height();
+    var top = 0,
+        left = 0;
 
     if (options.position == "center") {
         left = bw / 2 - options.width / 2;
@@ -713,8 +731,8 @@ l4iModal.switch = function(modalid, cb)
     }
 
     $("#l4i-modal").css({
-        "height": options.height +'px',
-        "width": options.width +'px',
+        "height": options.height + 'px',
+        "width": options.width + 'px',
     });
 
     $(".less-modal-body").height(options.height - inlet_height);
@@ -725,13 +743,13 @@ l4iModal.switch = function(modalid, cb)
         $("#l4i-modal-bg").fadeIn(150);
     }
 
-    $("#"+ modalid).css({
-        "z-index"   : 1,
-        "width"     : $(".less-modal-body").width(), // options.width +"px",
-        "height"    : (options.height - inlet_height) +"px"
+    $("#" + modalid).css({
+        "z-index": 1,
+        "width": $(".less-modal-body").width(), // options.width +"px",
+        "height": (options.height - inlet_height) + "px"
     });
 
-    var pp = $("#"+ modalid).position();
+    var pp = $("#" + modalid).position();
     var mov = pp.left;
     if (mov < 0) {
         mov = 0;
@@ -740,9 +758,9 @@ l4iModal.switch = function(modalid, cb)
     if (firstload) {
 
         $("#l4i-modal").css({
-            "z-index"   : 200,
-            "top"       : top +'px',
-            "left"      : left +'px'
+            "z-index": 200,
+            "top": top + 'px',
+            "left": left + 'px'
         }).hide().slideDown(100, function() {
             // l4iModal.Resize();
             // options.success();
@@ -759,9 +777,9 @@ l4iModal.switch = function(modalid, cb)
     } else {
 
         $("#l4i-modal").animate({
-            "z-index"   : 200,
-            "top"       : top +'px',
-            "left"      : left +'px'
+            "z-index": 200,
+            "top": top + 'px',
+            "left": left + 'px'
         }, 50, function() {
             // l4iModal.Resize();
             // options.success();
@@ -770,7 +788,7 @@ l4iModal.switch = function(modalid, cb)
 
     $('.less-modal-body-page').animate({
         top: 0,
-        left: "-"+ mov +"px"
+        left: "-" + mov + "px"
     }, 300, function() {
 
         if (!firstload) {
@@ -784,7 +802,7 @@ l4iModal.switch = function(modalid, cb)
             }
         }
 
-        $("#"+ modalid+" .inputfocus").focus();
+        $("#" + modalid + " .inputfocus").focus();
 
         l4iModal.Resize();
 
@@ -809,13 +827,12 @@ l4iModal.switch = function(modalid, cb)
 
     if (options.nextModalId !== undefined) {
         delete l4iModal.data[options.nextModalId];
-        $("#"+ options.nextModalId).remove();
+        $("#" + options.nextModalId).remove();
         l4iModal.data[options.id].nextModalId = undefined;
     }
 }
 
-l4iModal.PrevId = function()
-{
+l4iModal.PrevId = function() {
     var modal = l4iModal.data[l4iModal.current];
     if (modal.prevModalId !== undefined) {
         return modal.prevModalId;
@@ -823,8 +840,7 @@ l4iModal.PrevId = function()
     return null;
 }
 
-l4iModal.Prev = function(cb)
-{
+l4iModal.Prev = function(cb) {
     var previd = l4iModal.PrevId();
     if (previd != null) {
         // l4iModal.nextHistory = l4iModal.current;
@@ -833,8 +849,7 @@ l4iModal.Prev = function(cb)
 }
 
 
-l4iModal.buttonRender = function(buttons)
-{
+l4iModal.buttonRender = function(buttons) {
     var str = "";
     for (var i in buttons) {
 
@@ -847,22 +862,21 @@ l4iModal.buttonRender = function(buttons)
         }
 
         if (buttons[i].href) {
-            str += "<a class='btn btn-small "+ buttons[i].style
-                + "' href='"+buttons[i].href +"'>"
-                + buttons[i].title +"</a>";
+            str += "<a class='btn btn-small " + buttons[i].style
+                + "' href='" + buttons[i].href + "'>"
+                + buttons[i].title + "</a>";
         } else if (buttons[i].onclick) {
-            str += "<button class='btn btn-small "+ buttons[i].style
-                + "' onclick='"+buttons[i].onclick +"'>"
-                + buttons[i].title +"</button>";
+            str += "<button class='btn btn-small " + buttons[i].style
+                + "' onclick='" + buttons[i].onclick + "'>"
+                + buttons[i].title + "</button>";
         }
     }
 
     return str;
 }
 
-l4iModal.Resize = function()
-{
-    var h  = $("#l4i-modal").height();
+l4iModal.Resize = function() {
+    var h = $("#l4i-modal").height();
     var hh = $(".less-modal-header").outerHeight(true);
     var fh = $(".less-modal-footer").outerHeight(true);
     lessModalBodyHeight = h - hh - fh - 10;
@@ -870,8 +884,7 @@ l4iModal.Resize = function()
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
 
-l4iModal.Close = function(cb)
-{
+l4iModal.Close = function(cb) {
     if (!l4iModal.current) {
         if (cb) {
             cb();
@@ -888,8 +901,7 @@ l4iModal.Close = function(cb)
     });
 }
 
-l4iModal.ScrollTop = function()
-{
+l4iModal.ScrollTop = function() {
     $(".less-modal-body-pagelet.less_scroll").scrollTop(0);
 }
 
@@ -898,8 +910,7 @@ var l4iCookie = {
 
 };
 
-l4iCookie.Set = function(key, val, sec, path)
-{
+l4iCookie.Set = function(key, val, sec, path) {
     var expires = "";
 
     if (sec) {
@@ -912,23 +923,21 @@ l4iCookie.Set = function(key, val, sec, path)
         path = "/";
     }
 
-    document.cookie = key + "=" + val + expires + "; path="+ path;
+    document.cookie = key + "=" + val + expires + "; path=" + path;
 }
 
-l4iCookie.SetByDay = function(key, val, day, path)
-{
+l4iCookie.SetByDay = function(key, val, day, path) {
     l4iCookie.Set(key, val, day * 86400, path);
 }
 
-l4iCookie.Get = function(key)
-{
+l4iCookie.Get = function(key) {
     var keyEQ = key + "=";
     var ca = document.cookie.split(';');
 
     for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ')
-            c = c.substring(1, c.length);
+        c = c.substring(1, c.length);
         if (c.indexOf(keyEQ) == 0)
             return c.substring(keyEQ.length, c.length);
     }
@@ -936,8 +945,7 @@ l4iCookie.Get = function(key)
     return null;
 }
 
-l4iCookie.Del = function(key, path)
-{
+l4iCookie.Del = function(key, path) {
     l4iCookie.Set(key, "", -1, path);
 }
 
@@ -946,23 +954,19 @@ var l4iSession = {
 
 };
 
-l4iSession.Set = function(key, val)
-{
+l4iSession.Set = function(key, val) {
     sessionStorage.setItem(key, val);
 }
 
-l4iSession.Get = function(key)
-{
+l4iSession.Get = function(key) {
     return sessionStorage.getItem(key);
 }
 
-l4iSession.Del = function(key)
-{
+l4iSession.Del = function(key) {
     sessionStorage.removeItem(key);
 }
 
-l4iSession.DelByPrefix = function(prefix)
-{
+l4iSession.DelByPrefix = function(prefix) {
     var prelen = prefix.length;
     var qs = {};
 
@@ -982,23 +986,19 @@ var l4iStorage = {
 
 };
 
-l4iStorage.Set = function(key, val)
-{
+l4iStorage.Set = function(key, val) {
     localStorage.setItem(key, val);
 }
 
-l4iStorage.Get = function(key)
-{
+l4iStorage.Get = function(key) {
     return localStorage.getItem(key);
 }
 
-l4iStorage.Del = function(key)
-{
+l4iStorage.Del = function(key) {
     localStorage.removeItem(key);
 }
 
-l4iStorage.DelByPrefix = function(prefix)
-{
+l4iStorage.DelByPrefix = function(prefix) {
     if (!prefix) {
         return;
     }
@@ -1025,80 +1025,108 @@ l4iStorage.DelByPrefix = function(prefix)
     "use strict";
 
     var doT = {
-        version: "1.0.3",
-        templateSettings: {
-            evaluate:    /\{\[([\s\S]+?(\}?)+)\]\}/g,
-            interpolate: /\{\[=([\s\S]+?)\]\}/g,
-            encode:      /\{\[!([\s\S]+?)\]\}/g,
-            use:         /\{\[#([\s\S]+?)\]\}/g,
-            useParams:   /(^|[^\w$])def(?:\.|\[[\'\"])([\w$\.]+)(?:[\'\"]\])?\s*\:\s*([\w$\.]+|\"[^\"]+\"|\'[^\']+\'|\{[^\}]+\})/g,
-            define:      /\{\[##\s*([\w\.$]+)\s*(\:|=)([\s\S]+?)#\]\}/g,
-            defineParams:/^\s*([\w$]+):([\s\S]+)/,
-            conditional: /\{\[\?(\?)?\s*([\s\S]*?)\s*\]\}/g,
-            iterate:     /\{\[~\s*(?:\]\}|([\s\S]+?)\s*\:\s*([\w$]+)\s*(?:\:\s*([\w$]+))?\s*\]\})/g,
-            varname:    "it",
-            strip:      true,
-            append:     true,
-            selfcontained: false,
-            doNotSkipEncoded: false
+            version: "1.0.3",
+            templateSettings: {
+                evaluate: /\{\[([\s\S]+?(\}?)+)\]\}/g,
+                interpolate: /\{\[=([\s\S]+?)\]\}/g,
+                encode: /\{\[!([\s\S]+?)\]\}/g,
+                use: /\{\[#([\s\S]+?)\]\}/g,
+                useParams: /(^|[^\w$])def(?:\.|\[[\'\"])([\w$\.]+)(?:[\'\"]\])?\s*\:\s*([\w$\.]+|\"[^\"]+\"|\'[^\']+\'|\{[^\}]+\})/g,
+                define: /\{\[##\s*([\w\.$]+)\s*(\:|=)([\s\S]+?)#\]\}/g,
+                defineParams: /^\s*([\w$]+):([\s\S]+)/,
+                conditional: /\{\[\?(\?)?\s*([\s\S]*?)\s*\]\}/g,
+                iterate: /\{\[~\s*(?:\]\}|([\s\S]+?)\s*\:\s*([\w$]+)\s*(?:\:\s*([\w$]+))?\s*\]\})/g,
+                varname: "it",
+                strip: true,
+                append: true,
+                selfcontained: false,
+                doNotSkipEncoded: false
+            },
+            template: undefined, //fn, compile template
+            compile: undefined //fn, for express
         },
-        template: undefined, //fn, compile template
-        compile:  undefined  //fn, for express
-    }, _globals;
+        _globals;
 
     doT.encodeHTMLSource = function(doNotSkipEncoded) {
-        var encodeHTMLRules = { "&": "&#38;", "<": "&#60;", ">": "&#62;", '"': "&#34;", "'": "&#39;", "/": "&#47;" },
+        var encodeHTMLRules = {
+                "&": "&#38;",
+                "<": "&#60;",
+                ">": "&#62;",
+                '"': "&#34;",
+                "'": "&#39;",
+                "/": "&#47;"
+            },
             matchHTML = doNotSkipEncoded ? /[&<>"'\/]/g : /&(?!#?\w+;)|<|>|"|'|\//g;
         return function(code) {
-            return code ? code.toString().replace(matchHTML, function(m) {return encodeHTMLRules[m] || m;}) : "";
+            return code ? code.toString().replace(matchHTML, function(m) {
+                return encodeHTMLRules[m] || m;
+            }) : "";
         };
     };
 
-    _globals = (function(){ return this || (0,eval)("this"); }());
+    _globals = (function() {
+        return this || (0, eval)("this");
+    }());
 
     if (typeof module !== "undefined" && module.exports) {
         module.exports = doT;
     } else if (typeof define === "function" && define.amd) {
-        define(function(){return doT;});
+        define(function() {
+            return doT;
+        });
     } else {
         _globals.doT = doT;
     }
 
     var startend = {
-        append: { start: "'+(",      end: ")+'",      startencode: "'+encodeHTML(" },
-        split:  { start: "';out+=(", end: ");out+='", startencode: "';out+=encodeHTML(" }
-    }, skip = /$^/;
+            append: {
+                start: "'+(",
+                end: ")+'",
+                startencode: "'+encodeHTML("
+            },
+            split: {
+                start: "';out+=(",
+                end: ");out+='",
+                startencode: "';out+=encodeHTML("
+            }
+        },
+        skip = /$^/;
 
     function resolveDefs(c, block, def) {
         return ((typeof block === "string") ? block : block.toString())
-        .replace(c.define || skip, function(m, code, assign, value) {
-            if (code.indexOf("def.") === 0) {
-                code = code.substring(4);
-            }
-            if (!(code in def)) {
-                if (assign === ":") {
-                    if (c.defineParams) value.replace(c.defineParams, function(m, param, v) {
-                        def[code] = {arg: param, text: v};
+            .replace(c.define || skip, function(m, code, assign, value) {
+                if (code.indexOf("def.") === 0) {
+                    code = code.substring(4);
+                }
+                if (!(code in def)) {
+                    if (assign === ":") {
+                        if (c.defineParams) value.replace(c.defineParams, function(m, param, v) {
+                                def[code] = {
+                                    arg: param,
+                                    text: v
+                                };
+                            });
+                        if (!(code in def))
+                            def[code] = value;
+                    } else {
+                        new Function("def", "def['" + code + "']=" + value)(def);
+                    }
+                }
+                return "";
+            })
+            .replace(c.use || skip, function(m, code) {
+                if (c.useParams)
+                    code = code.replace(c.useParams, function(m, s, d, param) {
+                        if (def[d] && def[d].arg && param) {
+                            var rw = (d + ":" + param).replace(/'|\\/g, "_");
+                            def.__exp = def.__exp || {};
+                            def.__exp[rw] = def[d].text.replace(new RegExp("(^|[^\\w$])" + def[d].arg + "([^\\w$])", "g"), "$1" + param + "$2");
+                            return s + "def.__exp['" + rw + "']";
+                        }
                     });
-                    if (!(code in def)) def[code]= value;
-                } else {
-                    new Function("def", "def['"+code+"']=" + value)(def);
-                }
-            }
-            return "";
-        })
-        .replace(c.use || skip, function(m, code) {
-            if (c.useParams) code = code.replace(c.useParams, function(m, s, d, param) {
-                if (def[d] && def[d].arg && param) {
-                    var rw = (d+":"+param).replace(/'|\\/g, "_");
-                    def.__exp = def.__exp || {};
-                    def.__exp[rw] = def[d].text.replace(new RegExp("(^|[^\\w$])" + def[d].arg + "([^\\w$])", "g"), "$1" + param + "$2");
-                    return s + "def.__exp['"+rw+"']";
-                }
+                var v = new Function("def", "return " + code)(def);
+                return v ? resolveDefs(c, v, def) : v;
             });
-            var v = new Function("def", "return " + code)(def);
-            return v ? resolveDefs(c, v, def) : v;
-        });
     }
 
     function unescape(code) {
@@ -1107,11 +1135,14 @@ l4iStorage.DelByPrefix = function(prefix)
 
     doT.template = function(tmpl, c, def) {
         c = c || doT.templateSettings;
-        var cse = c.append ? startend.append : startend.split, needhtmlencode, sid = 0, indv,
-            str  = (c.use || c.define) ? resolveDefs(c, tmpl, def || {}) : tmpl;
+        var cse = c.append ? startend.append : startend.split,
+            needhtmlencode,
+            sid = 0,
+            indv,
+            str = (c.use || c.define) ? resolveDefs(c, tmpl, def || {}) : tmpl;
 
-        str = ("var out='" + (c.strip ? str.replace(/(^|\r|\n)\t* +| +\t*(\r|\n|$)/g," ")
-                    .replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g,""): str)
+        str = ("var out='" + (c.strip ? str.replace(/(^|\r|\n)\t* +| +\t*(\r|\n|$)/g, " ")
+            .replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g, "") : str)
             .replace(/'|\\/g, "\\$&")
             .replace(c.interpolate || skip, function(m, code) {
                 return cse.start + unescape(code) + cse.end;
@@ -1127,20 +1158,23 @@ l4iStorage.DelByPrefix = function(prefix)
             })
             .replace(c.iterate || skip, function(m, iterate, vname, iname) {
                 if (!iterate) return "';} } out+='";
-                sid+=1; indv=iname || "i"+sid; iterate=unescape(iterate);
-                return "';var arr"+sid+"="+iterate+";if(arr"+sid+"){var "+vname+","+indv+"=-1,l"+sid+"=arr"+sid+".length-1;while("+indv+"<l"+sid+"){"
-                    +vname+"=arr"+sid+"["+indv+"+=1];out+='";
+                sid += 1;
+                indv = iname || "i" + sid;
+                iterate = unescape(iterate);
+                return "';var arr" + sid + "=" + iterate + ";if(arr" + sid + "){var " + vname + "," + indv + "=-1,l" + sid + "=arr" + sid + ".length-1;while(" + indv + "<l" + sid + "){"
+                    + vname + "=arr" + sid + "[" + indv + "+=1];out+='";
             })
             .replace(c.evaluate || skip, function(m, code) {
                 return "';" + unescape(code) + "out+='";
             })
-            + "';return out;")
+        + "';return out;")
             .replace(/\n/g, "\\n").replace(/\t/g, '\\t').replace(/\r/g, "\\r")
             .replace(/(\s|;|\}|^|\{)out\+='';/g, '$1').replace(/\+''/g, "");
             //.replace(/(\s|;|\}|^|\{)out\+=''\+/g,'$1out+=');
 
         if (needhtmlencode) {
-            if (!c.selfcontained && _globals && !_globals._encodeHTML) _globals._encodeHTML = doT.encodeHTMLSource(c.doNotSkipEncoded);
+            if (!c.selfcontained && _globals && !_globals._encodeHTML)
+                _globals._encodeHTML = doT.encodeHTMLSource(c.doNotSkipEncoded);
             str = "var encodeHTML = typeof _encodeHTML !== 'undefined' ? _encodeHTML : ("
                 + doT.encodeHTMLSource.toString() + "(" + (c.doNotSkipEncoded || '') + "));"
                 + str;
@@ -1163,8 +1197,7 @@ var l4iTemplate = {
 
 };
 
-l4iTemplate.RenderFromID = function(idto, idfrom, data)
-{
+l4iTemplate.RenderFromID = function(idto, idfrom, data) {
     // TODO cache
     var elem = document.getElementById(idfrom);
     if (!elem) {
@@ -1174,18 +1207,17 @@ l4iTemplate.RenderFromID = function(idto, idfrom, data)
 
     if (data) {
         var tempFn = doT.template(source);
-        $("#"+ idto).html(tempFn(data));
+        $("#" + idto).html(tempFn(data));
     } else {
-        $("#"+ idto).html(source);
+        $("#" + idto).html(source);
     }
-    // var elemto = document.getElementById(idto);
-    // if (elemto) {
-    //     elemto.innerHTML = tempFn(data);
-    // }
+// var elemto = document.getElementById(idto);
+// if (elemto) {
+//     elemto.innerHTML = tempFn(data);
+// }
 }
 
-l4iTemplate.RenderByID = function(idfrom, data)
-{
+l4iTemplate.RenderByID = function(idfrom, data) {
     // TODO cache
     var elem = document.getElementById(idfrom);
     if (!elem) {
@@ -1198,16 +1230,15 @@ l4iTemplate.RenderByID = function(idfrom, data)
     return tempFn(data);
 }
 
-l4iTemplate.Render = function(options)
-{
+l4iTemplate.Render = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.dstid === undefined) {
@@ -1230,20 +1261,20 @@ l4iTemplate.Render = function(options)
             var tempFn = doT.template(options.tplsrc);
 
             if (options.prepend) {
-                $("#"+ options.dstid).prepend(tempFn(options.data));
+                $("#" + options.dstid).prepend(tempFn(options.data));
             } else if (options.append) {
-                $("#"+ options.dstid).append(tempFn(options.data));
+                $("#" + options.dstid).append(tempFn(options.data));
             } else {
-                $("#"+ options.dstid).html(tempFn(options.data));
+                $("#" + options.dstid).html(tempFn(options.data));
             }
 
         } else {
             if (options.prepend) {
-                $("#"+ options.dstid).prepend(options.tplsrc);
+                $("#" + options.dstid).prepend(options.tplsrc);
             } else if (options.append) {
-                $("#"+ options.dstid).append(options.tplsrc);
+                $("#" + options.dstid).append(options.tplsrc);
             } else {
-                $("#"+ options.dstid).html(options.tplsrc);
+                $("#" + options.dstid).html(options.tplsrc);
             }
         }
 
@@ -1277,21 +1308,21 @@ l4iTemplate.Render = function(options)
             var tempFn = doT.template(source);
 
             if (options.prepend) {
-                $("#"+ options.dstid).prepend(tempFn(options.data));
+                $("#" + options.dstid).prepend(tempFn(options.data));
             } else if (options.append) {
-                $("#"+ options.dstid).append(tempFn(options.data));
+                $("#" + options.dstid).append(tempFn(options.data));
             } else {
-                $("#"+ options.dstid).html(tempFn(options.data));
+                $("#" + options.dstid).html(tempFn(options.data));
             }
 
         } else {
 
             if (options.prepend) {
-                $("#"+ options.dstid).prepend(source);
+                $("#" + options.dstid).prepend(source);
             } else if (options.append) {
-                $("#"+ options.dstid).append(source);
+                $("#" + options.dstid).append(source);
             } else {
-                $("#"+ options.dstid).html(source);
+                $("#" + options.dstid).html(source);
             }
         }
 
@@ -1311,10 +1342,10 @@ l4iTemplate.Render = function(options)
         options.tpluri += Math.random();
 
         $.ajax({
-            url     : options.tplurl,
-            type    : "GET",
-            timeout : 10000,
-            success : function(rsp) {
+            url: options.tplurl,
+            type: "GET",
+            timeout: 10000,
+            success: function(rsp) {
 
                 if (options.i18n) {
                     rsp = l4i.TR(rsp);
@@ -1323,20 +1354,20 @@ l4iTemplate.Render = function(options)
                 if (options.data !== undefined) {
                     var tempFn = doT.template(rsp);
                     if (options.prepend) {
-                        $("#"+ options.dstid).prepend(tempFn(options.data));
+                        $("#" + options.dstid).prepend(tempFn(options.data));
                     } else if (options.append) {
-                        $("#"+ options.dstid).append(tempFn(options.data));
+                        $("#" + options.dstid).append(tempFn(options.data));
                     } else {
-                        $("#"+ options.dstid).html(tempFn(options.data));
+                        $("#" + options.dstid).html(tempFn(options.data));
                     }
                 } else {
 
                     if (options.prepend) {
-                        $("#"+ options.dstid).prepend(rsp);
+                        $("#" + options.dstid).prepend(rsp);
                     } else if (options.append) {
-                        $("#"+ options.dstid).append(rsp);
+                        $("#" + options.dstid).append(rsp);
                     } else {
-                        $("#"+ options.dstid).html(rsp);
+                        $("#" + options.dstid).html(rsp);
                     }
                 }
 
@@ -1346,7 +1377,7 @@ l4iTemplate.Render = function(options)
 
                 options.success();
             },
-            error : function() {
+            error: function() {
                 options.error(400, "tplurl can not fetch")
             }
         });
@@ -1359,8 +1390,7 @@ var l4iString = {
 
 };
 
-l4iString.CryptoMd5 = function(str)
-{
+l4iString.CryptoMd5 = function(str) {
     // http://kevin.vanzonneveld.net
     // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
     // + namespaced by: Michael White (http://getsprink.com)
@@ -1373,12 +1403,16 @@ l4iString.CryptoMd5 = function(str)
     // *     returns 1: '6e658d4bfcb59cc13f96c14450ac40b9'
     var xl;
 
-    var rotateLeft = function (lValue, iShiftBits) {
+    var rotateLeft = function(lValue, iShiftBits) {
         return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
     };
 
-    var addUnsigned = function (lX, lY) {
-        var lX4, lY4, lX8, lY8, lResult;
+    var addUnsigned = function(lX, lY) {
+        var lX4,
+            lY4,
+            lX8,
+            lY8,
+            lResult;
         lX8 = (lX & 0x80000000);
         lY8 = (lY & 0x80000000);
         lX4 = (lX & 0x40000000);
@@ -1398,40 +1432,40 @@ l4iString.CryptoMd5 = function(str)
         }
     };
 
-    var _F = function (x, y, z) {
+    var _F = function(x, y, z) {
         return (x & y) | ((~x) & z);
     };
-    var _G = function (x, y, z) {
+    var _G = function(x, y, z) {
         return (x & z) | (y & (~z));
     };
-    var _H = function (x, y, z) {
+    var _H = function(x, y, z) {
         return (x ^ y ^ z);
     };
-    var _I = function (x, y, z) {
+    var _I = function(x, y, z) {
         return (y ^ (x | (~z)));
     };
 
-    var _FF = function (a, b, c, d, x, s, ac) {
+    var _FF = function(a, b, c, d, x, s, ac) {
         a = addUnsigned(a, addUnsigned(addUnsigned(_F(b, c, d), x), ac));
         return addUnsigned(rotateLeft(a, s), b);
     };
 
-    var _GG = function (a, b, c, d, x, s, ac) {
+    var _GG = function(a, b, c, d, x, s, ac) {
         a = addUnsigned(a, addUnsigned(addUnsigned(_G(b, c, d), x), ac));
         return addUnsigned(rotateLeft(a, s), b);
     };
 
-    var _HH = function (a, b, c, d, x, s, ac) {
+    var _HH = function(a, b, c, d, x, s, ac) {
         a = addUnsigned(a, addUnsigned(addUnsigned(_H(b, c, d), x), ac));
         return addUnsigned(rotateLeft(a, s), b);
     };
 
-    var _II = function (a, b, c, d, x, s, ac) {
+    var _II = function(a, b, c, d, x, s, ac) {
         a = addUnsigned(a, addUnsigned(addUnsigned(_I(b, c, d), x), ac));
         return addUnsigned(rotateLeft(a, s), b);
     };
 
-    var convertToWordArray = function (str) {
+    var convertToWordArray = function(str) {
         var lWordCount;
         var lMessageLength = str.length;
         var lNumberOfWords_temp1 = lMessageLength + 8;
@@ -1454,10 +1488,11 @@ l4iString.CryptoMd5 = function(str)
         return lWordArray;
     };
 
-    var wordToHex = function (lValue) {
+    var wordToHex = function(lValue) {
         var wordToHexValue = "",
             wordToHexValue_temp = "",
-            lByte, lCount;
+            lByte,
+            lCount;
         for (lCount = 0; lCount <= 3; lCount++) {
             lByte = (lValue >>> (lCount * 8)) & 255;
             wordToHexValue_temp = "0" + lByte.toString(16);
@@ -1467,7 +1502,16 @@ l4iString.CryptoMd5 = function(str)
     };
 
     var x = [],
-        k, AA, BB, CC, DD, a, b, c, d, S11 = 7,
+        k,
+        AA,
+        BB,
+        CC,
+        DD,
+        a,
+        b,
+        c,
+        d,
+        S11 = 7,
         S12 = 12,
         S13 = 17,
         S14 = 22,
@@ -1484,9 +1528,9 @@ l4iString.CryptoMd5 = function(str)
         S43 = 15,
         S44 = 21;
 
-    var utf8_encode = function (string) {
+    var utf8_encode = function(string) {
 
-        string = string.replace(/\r\n/g,"\n");
+        string = string.replace(/\r\n/g, "\n");
         var utftext = "";
 
         for (var n = 0; n < string.length; n++) {
@@ -1495,12 +1539,10 @@ l4iString.CryptoMd5 = function(str)
 
             if (c < 128) {
                 utftext += String.fromCharCode(c);
-            }
-            else if((c > 127) && (c < 2048)) {
+            } else if ((c > 127) && (c < 2048)) {
                 utftext += String.fromCharCode((c >> 6) | 192);
                 utftext += String.fromCharCode((c & 63) | 128);
-            }
-            else {
+            } else {
                 utftext += String.fromCharCode((c >> 12) | 224);
                 utftext += String.fromCharCode(((c >> 6) & 63) | 128);
                 utftext += String.fromCharCode((c & 63) | 128);
@@ -1599,200 +1641,202 @@ l4iString.CryptoMd5 = function(str)
 }
 
 
-function _sprintf()
-{
-  //  discuss at: http://phpjs.org/functions/sprintf/
-  // original by: Ash Searle (http://hexmen.com/blog/)
-  // improved by: Michael White (http://getsprink.com)
-  // improved by: Jack
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: Dj
-  // improved by: Allidylls
-  //    input by: Paulo Freitas
-  //    input by: Brett Zamir (http://brett-zamir.me)
-  //   example 1: sprintf("%01.2f", 123.1);
-  //   returns 1: 123.10
-  //   example 2: sprintf("[%10s]", 'monkey');
-  //   returns 2: '[    monkey]'
-  //   example 3: sprintf("[%'#10s]", 'monkey');
-  //   returns 3: '[####monkey]'
-  //   example 4: sprintf("%d", 123456789012345);
-  //   returns 4: '123456789012345'
-  //   example 5: sprintf('%-03s', 'E');
-  //   returns 5: 'E00'
+function _sprintf() {
+    //  discuss at: http://phpjs.org/functions/sprintf/
+    // original by: Ash Searle (http://hexmen.com/blog/)
+    // improved by: Michael White (http://getsprink.com)
+    // improved by: Jack
+    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // improved by: Dj
+    // improved by: Allidylls
+    //    input by: Paulo Freitas
+    //    input by: Brett Zamir (http://brett-zamir.me)
+    //   example 1: sprintf("%01.2f", 123.1);
+    //   returns 1: 123.10
+    //   example 2: sprintf("[%10s]", 'monkey');
+    //   returns 2: '[    monkey]'
+    //   example 3: sprintf("[%'#10s]", 'monkey');
+    //   returns 3: '[####monkey]'
+    //   example 4: sprintf("%d", 123456789012345);
+    //   returns 4: '123456789012345'
+    //   example 5: sprintf('%-03s', 'E');
+    //   returns 5: 'E00'
 
-  var regex = /%%|%(\d+\$)?([-+\'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuideEfFgG])/g;
-  var a = arguments;
-  var i = 0;
-  var format = a[i++];
+    var regex = /%%|%(\d+\$)?([-+\'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuideEfFgG])/g;
+    var a = arguments;
+    var i = 0;
+    var format = a[i++];
 
-  // pad()
-  var pad = function (str, len, chr, leftJustify) {
-    if (!chr) {
-      chr = ' ';
-    }
-    var padding = (str.length >= len) ? '' : new Array(1 + len - str.length >>> 0)
-      .join(chr);
-    return leftJustify ? str + padding : padding + str;
-  };
+    // pad()
+    var pad = function(str, len, chr, leftJustify) {
+        if (!chr) {
+            chr = ' ';
+        }
+        var padding = (str.length >= len) ? '' : new Array(1 + len - str.length >>> 0)
+            .join(chr);
+        return leftJustify ? str + padding : padding + str;
+    };
 
-  // justify()
-  var justify = function (value, prefix, leftJustify, minWidth, zeroPad, customPadChar) {
-    var diff = minWidth - value.length;
-    if (diff > 0) {
-      if (leftJustify || !zeroPad) {
-        value = pad(value, minWidth, customPadChar, leftJustify);
-      } else {
-        value = value.slice(0, prefix.length) + pad('', diff, '0', true) + value.slice(prefix.length);
-      }
-    }
-    return value;
-  };
+    // justify()
+    var justify = function(value, prefix, leftJustify, minWidth, zeroPad, customPadChar) {
+        var diff = minWidth - value.length;
+        if (diff > 0) {
+            if (leftJustify || !zeroPad) {
+                value = pad(value, minWidth, customPadChar, leftJustify);
+            } else {
+                value = value.slice(0, prefix.length) + pad('', diff, '0', true) + value.slice(prefix.length);
+            }
+        }
+        return value;
+    };
 
-  // formatBaseX()
-  var formatBaseX = function (value, base, prefix, leftJustify, minWidth, precision, zeroPad) {
-    // Note: casts negative numbers to positive ones
-    var number = value >>> 0;
-    prefix = prefix && number && {
-      '2': '0b',
-      '8': '0',
-      '16': '0x'
-    }[base] || '';
-    value = prefix + pad(number.toString(base), precision || 0, '0', false);
-    return justify(value, prefix, leftJustify, minWidth, zeroPad);
-  };
+    // formatBaseX()
+    var formatBaseX = function(value, base, prefix, leftJustify, minWidth, precision, zeroPad) {
+        // Note: casts negative numbers to positive ones
+        var number = value >>> 0;
+        prefix = prefix && number && {
+                '2': '0b',
+                '8': '0',
+                '16': '0x'
+            }[base] || '';
+        value = prefix + pad(number.toString(base), precision || 0, '0', false);
+        return justify(value, prefix, leftJustify, minWidth, zeroPad);
+    };
 
-  // formatString()
-  var formatString = function (value, leftJustify, minWidth, precision, zeroPad, customPadChar) {
-    if (precision != null) {
-      value = value.slice(0, precision);
-    }
-    return justify(value, '', leftJustify, minWidth, zeroPad, customPadChar);
-  };
+    // formatString()
+    var formatString = function(value, leftJustify, minWidth, precision, zeroPad, customPadChar) {
+        if (precision != null) {
+            value = value.slice(0, precision);
+        }
+        return justify(value, '', leftJustify, minWidth, zeroPad, customPadChar);
+    };
 
-  // doFormat()
-  var doFormat = function (substring, valueIndex, flags, minWidth, _, precision, type) {
-    var number, prefix, method, textTransform, value;
+    // doFormat()
+    var doFormat = function(substring, valueIndex, flags, minWidth, _, precision, type) {
+        var number,
+            prefix,
+            method,
+            textTransform,
+            value;
 
-    if (substring === '%%') {
-      return '%';
-    }
+        if (substring === '%%') {
+            return '%';
+        }
 
-    // parse flags
-    var leftJustify = false;
-    var positivePrefix = '';
-    var zeroPad = false;
-    var prefixBaseX = false;
-    var customPadChar = ' ';
-    var flagsl = flags.length;
-    for (var j = 0; flags && j < flagsl; j++) {
-      switch (flags.charAt(j)) {
-      case ' ':
-        positivePrefix = ' ';
-        break;
-      case '+':
-        positivePrefix = '+';
-        break;
-      case '-':
-        leftJustify = true;
-        break;
-      case "'":
-        customPadChar = flags.charAt(j + 1);
-        break;
-      case '0':
-        zeroPad = true;
-        customPadChar = '0';
-        break;
-      case '#':
-        prefixBaseX = true;
-        break;
-      }
-    }
+        // parse flags
+        var leftJustify = false;
+        var positivePrefix = '';
+        var zeroPad = false;
+        var prefixBaseX = false;
+        var customPadChar = ' ';
+        var flagsl = flags.length;
+        for (var j = 0; flags && j < flagsl; j++) {
+            switch (flags.charAt(j)) {
+                case ' ':
+                    positivePrefix = ' ';
+                    break;
+                case '+':
+                    positivePrefix = '+';
+                    break;
+                case '-':
+                    leftJustify = true;
+                    break;
+                case "'":
+                    customPadChar = flags.charAt(j + 1);
+                    break;
+                case '0':
+                    zeroPad = true;
+                    customPadChar = '0';
+                    break;
+                case '#':
+                    prefixBaseX = true;
+                    break;
+            }
+        }
 
-    // parameters may be null, undefined, empty-string or real valued
-    // we want to ignore null, undefined and empty-string values
-    if (!minWidth) {
-      minWidth = 0;
-    } else if (minWidth === '*') {
-      minWidth = +a[i++];
-    } else if (minWidth.charAt(0) == '*') {
-      minWidth = +a[minWidth.slice(1, -1)];
-    } else {
-      minWidth = +minWidth;
-    }
+        // parameters may be null, undefined, empty-string or real valued
+        // we want to ignore null, undefined and empty-string values
+        if (!minWidth) {
+            minWidth = 0;
+        } else if (minWidth === '*') {
+            minWidth = +a[i++];
+        } else if (minWidth.charAt(0) == '*') {
+            minWidth = +a[minWidth.slice(1, -1)];
+        } else {
+            minWidth = +minWidth;
+        }
 
-    // Note: undocumented perl feature:
-    if (minWidth < 0) {
-      minWidth = -minWidth;
-      leftJustify = true;
-    }
+        // Note: undocumented perl feature:
+        if (minWidth < 0) {
+            minWidth = -minWidth;
+            leftJustify = true;
+        }
 
-    if (!isFinite(minWidth)) {
-      throw new Error('sprintf: (minimum-)width must be finite');
-    }
+        if (!isFinite(minWidth)) {
+            throw new Error('sprintf: (minimum-)width must be finite');
+        }
 
-    if (!precision) {
-      precision = 'fFeE'.indexOf(type) > -1 ? 6 : (type === 'd') ? 0 : undefined;
-    } else if (precision === '*') {
-      precision = +a[i++];
-    } else if (precision.charAt(0) == '*') {
-      precision = +a[precision.slice(1, -1)];
-    } else {
-      precision = +precision;
-    }
+        if (!precision) {
+            precision = 'fFeE'.indexOf(type) > -1 ? 6 : (type === 'd') ? 0 : undefined;
+        } else if (precision === '*') {
+            precision = +a[i++];
+        } else if (precision.charAt(0) == '*') {
+            precision = +a[precision.slice(1, -1)];
+        } else {
+            precision = +precision;
+        }
 
-    // grab value using valueIndex if required?
-    value = valueIndex ? a[valueIndex.slice(0, -1)] : a[i++];
+        // grab value using valueIndex if required?
+        value = valueIndex ? a[valueIndex.slice(0, -1)] : a[i++];
 
-    switch (type) {
-    case 's':
-      return formatString(String(value), leftJustify, minWidth, precision, zeroPad, customPadChar);
-    case 'c':
-      return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
-    case 'b':
-      return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    case 'o':
-      return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    case 'x':
-      return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    case 'X':
-      return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad)
-        .toUpperCase();
-    case 'u':
-      return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-    case 'i':
-    case 'd':
-      number = +value || 0;
-      // Plain Math.round doesn't just truncate
-      number = Math.round(number - number % 1);
-      prefix = number < 0 ? '-' : positivePrefix;
-      value = prefix + pad(String(Math.abs(number)), precision, '0', false);
-      return justify(value, prefix, leftJustify, minWidth, zeroPad);
-    case 'e':
-    case 'E':
-    case 'f': // Should handle locales (as per setlocale)
-    case 'F':
-    case 'g':
-    case 'G':
-      number = +value;
-      prefix = number < 0 ? '-' : positivePrefix;
-      method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
-      textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
-      value = prefix + Math.abs(number)[method](precision);
-      return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
-    default:
-      return substring;
-    }
-  };
+        switch (type) {
+            case 's':
+                return formatString(String(value), leftJustify, minWidth, precision, zeroPad, customPadChar);
+            case 'c':
+                return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
+            case 'b':
+                return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+            case 'o':
+                return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+            case 'x':
+                return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+            case 'X':
+                return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad)
+                    .toUpperCase();
+            case 'u':
+                return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+            case 'i':
+            case 'd':
+                number = +value || 0;
+                // Plain Math.round doesn't just truncate
+                number = Math.round(number - number % 1);
+                prefix = number < 0 ? '-' : positivePrefix;
+                value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+                return justify(value, prefix, leftJustify, minWidth, zeroPad);
+            case 'e':
+            case 'E':
+            case 'f': // Should handle locales (as per setlocale)
+            case 'F':
+            case 'g':
+            case 'G':
+                number = +value;
+                prefix = number < 0 ? '-' : positivePrefix;
+                method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
+                textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
+                value = prefix + Math.abs(number)[method](precision);
+                return justify(value, prefix, leftJustify, minWidth, zeroPad)[textTransform]();
+            default:
+                return substring;
+        }
+    };
 
-  return format.replace(regex, doFormat);
+    return format.replace(regex, doFormat);
 }
 
 
-l4i.Ajax = function(url, options)
-{
+l4i.Ajax = function(url, options) {
     options = options || {};
 
     //
@@ -1817,11 +1861,11 @@ l4i.Ajax = function(url, options)
 
     //
     $.ajax({
-        url     : url,
-        type    : options.method,
-        data    : options.data,
-        timeout : options.timeout,
-        success : function(rsp) {
+        url: url,
+        type: options.method,
+        data: options.data,
+        timeout: options.timeout,
+        success: function(rsp) {
             if (typeof options.callback === "function") {
                 options.callback(null, rsp);
             }
