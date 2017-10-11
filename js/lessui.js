@@ -1847,6 +1847,12 @@ l4i.Ajax = function(url, options) {
             url += "?_=";
         }
         url += Math.random();
+    } else if (l4i.app_version && l4i.app_version.length > 0) {
+        if (/\?/.test(url)) {
+            url += "&_="+ l4i.app_version;
+        } else {
+            url += "?_="+ l4i.app_version;
+        }
     }
 
     //
