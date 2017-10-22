@@ -55,6 +55,9 @@ l4i.UrlEventClean = function(pid) {
         if (pid == l4i.urlevs[i].pid) {
             delete l4i.urlevs[i];
         }
+        if (i == l4i.urlevc) {
+            l4i.urlevc = null;
+        }
     }
 }
 
@@ -354,6 +357,14 @@ l4i.UnixTimeFormat = function(time, format) {
     return (new Date(time * 1000)).l4iTimeFormat(format);
 }
 
+l4i.UnixMillisecondFormat = function(time, format) {
+    if (!time) {
+        return "";
+    }
+
+    return (new Date(time)).l4iTimeFormat(format);
+}
+
 l4i.UriQuery = function() {
     // This function is anonymous, is executed immediately and
     // the return value is assigned to l4i.UriQuery!
@@ -626,7 +637,6 @@ l4iModal.switch = function(modalid, cb) {
             var source = elem.value || elem.innerHTML;
 
             if (options.data !== undefined) {
-                // console.log(source);
                 var tempFn = doT.template(source);
                 body += tempFn(options.data);
             } else {
@@ -648,7 +658,6 @@ l4iModal.switch = function(modalid, cb) {
                 timeout: 10000,
                 async: false,
                 success: function(rsp) {
-                    // console.log(rsp);
                     if (options.data !== undefined) {
                         var tempFn = doT.template(rsp);
                         body += tempFn(options.data);
@@ -1849,9 +1858,9 @@ l4i.Ajax = function(url, options) {
         url += Math.random();
     } else if (l4i.app_version && l4i.app_version.length > 0) {
         if (/\?/.test(url)) {
-            url += "&_="+ l4i.app_version;
+            url += "&_=" + l4i.app_version;
         } else {
-            url += "?_="+ l4i.app_version;
+            url += "?_=" + l4i.app_version;
         }
     }
 
