@@ -61,7 +61,15 @@ l4i.UrlEventClean = function(pid) {
     }
 }
 
+l4i.UrlEventActive = function(nav_target) {
+    l4i.url_event_action(nav_target, null, false);
+}
+
 l4i.UrlEventHandler = function(nav_target, auto_prev) {
+    l4i.url_event_action(nav_target, auto_prev, true);
+}
+
+l4i.url_event_action = function(nav_target, auto_prev, call_func) {
     var nav_name = "";
     if (typeof nav_target == "string") {
         nav_name = nav_target.replace("#", "");
@@ -99,7 +107,9 @@ l4i.UrlEventHandler = function(nav_target, auto_prev) {
                 var nav_prev = l4iStorage.Get("lui_" + l4i.urlevs[nav_name].pid);
                 if (nav_prev) {
                     if (l4i.urlevs[nav_prev]) {
-                        l4i.urlevs[nav_prev].func(nav_prev);
+                        if (call_func) {
+                            l4i.urlevs[nav_prev].func(nav_prev);
+                        }
                         l4i.urlevc = nav_prev;
                         var prev_tg = $("body").find("a[href='#" + nav_prev + "']");
                         if (prev_tg) {
@@ -124,7 +134,9 @@ l4i.UrlEventHandler = function(nav_target, auto_prev) {
             nav_target.addClass("active");
         }
 
-        l4i.urlevs[nav_name].func(nav_name);
+        if (call_func) {
+            l4i.urlevs[nav_name].func(nav_name);
+        }
         l4i.urlevc = nav_name;
     }
 }
