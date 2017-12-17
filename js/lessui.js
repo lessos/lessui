@@ -1849,9 +1849,9 @@ l4i.Ajax = function(url, options) {
         url += Math.random();
     } else if (l4i.app_version && l4i.app_version.length > 0) {
         if (/\?/.test(url)) {
-            url += "&_="+ l4i.app_version;
+            url += "&_=" + l4i.app_version;
         } else {
-            url += "?_="+ l4i.app_version;
+            url += "?_=" + l4i.app_version;
         }
     }
 
@@ -1864,6 +1864,9 @@ l4i.Ajax = function(url, options) {
     if (!options.timeout) {
         options.timeout = 10000;
     }
+    if (!options.async || options.async !== false) {
+        options.async = true;
+    }
 
     //
     $.ajax({
@@ -1871,6 +1874,7 @@ l4i.Ajax = function(url, options) {
         type: options.method,
         data: options.data,
         timeout: options.timeout,
+        async: options.async,
         success: function(rsp) {
             if (typeof options.callback === "function") {
                 options.callback(null, rsp);
