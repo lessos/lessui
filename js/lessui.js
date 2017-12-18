@@ -779,6 +779,7 @@ l4iModal.switch = function(modalid, cb) {
     if (firstload) {
 
         $("#l4i-modal").css({
+            "position": "fixed",
             "z-index": 200,
             "top": top + 'px',
             "left": left + 'px'
@@ -798,6 +799,7 @@ l4iModal.switch = function(modalid, cb) {
     } else {
 
         $("#l4i-modal").animate({
+            "position": "fixed",
             "z-index": 200,
             "top": top + 'px',
             "left": left + 'px'
