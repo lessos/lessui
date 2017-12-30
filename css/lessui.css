@@ -111,7 +111,7 @@ body {
 }
 #l4i-modal-bg {
   position: fixed;
-  z-index: 20;
+  z-index: 1050;
   width: 100%;
   height: 100%;
   top: 0px;
@@ -120,7 +120,7 @@ body {
 }
 #l4i-modal {
   z-index: 2000 !important;
-  position: absolute;
+  position: fixed;
   display: none;
   padding: 10px;
   background-color: #fff;
@@ -238,7 +238,7 @@ body {
   background-color: #008a00 !important;
 }
 .metroui-bg-blue {
-  background-color: #00aff0 !important;
+  background-color: #00AFF0 !important;
 }
 .metroui-bg-teal {
   background-color: #00aba9 !important;
@@ -298,22 +298,22 @@ body {
   background-color: #222222 !important;
 }
 .metroui-bg-darkBrown {
-  background-color: #63362f !important;
+  background-color: #63362F !important;
 }
 .metroui-bg-darkCrimson {
   background-color: #640024 !important;
 }
 .metroui-bg-darkMagenta {
-  background-color: #81003c !important;
+  background-color: #81003C !important;
 }
 .metroui-bg-darkIndigo {
-  background-color: #4b0096 !important;
+  background-color: #4B0096 !important;
 }
 .metroui-bg-darkCyan {
-  background-color: #1b6eae !important;
+  background-color: #1B6EAE !important;
 }
 .metroui-bg-darkCobalt {
-  background-color: #00356a !important;
+  background-color: #00356A !important;
 }
 .metroui-bg-darkTeal {
   background-color: #004050 !important;
@@ -343,7 +343,7 @@ body {
   background-color: #4390df !important;
 }
 .metroui-bg-lighterBlue {
-  background-color: #00ccff !important;
+  background-color: #00CCFF !important;
 }
 .metroui-bg-lightTeal {
   background-color: #45fffd !important;
