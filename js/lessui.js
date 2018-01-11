@@ -703,11 +703,18 @@ l4iModal.switch = function(modalid, cb) {
         }).show();
     }
 
-    if (options.width === undefined) {
+    var bw = $(window).width(),
+        bh = $(window).height();
+
+    if (options.width && options.width == "max") {
+        options.width = bw - 100;
+    } else if (!options.width) {
         options.width = l4iModal.width;
     }
 
-    if (options.height === undefined) {
+    if (options.height && options.height == "max") {
+        options.height = bh - 100;
+    } else if (!options.height) {
         options.height = l4iModal.height;
     }
 
@@ -729,8 +736,6 @@ l4iModal.switch = function(modalid, cb) {
         options.height = 100;
     }
 
-    var bw = $(window).width(),
-        bh = $(window).height();
     var top = 0,
         left = 0;
 
