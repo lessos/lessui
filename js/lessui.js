@@ -81,7 +81,14 @@ l4i.url_event_action = function(nav_target, auto_prev, call_func) {
     }
 
     if (nav_name.length < 1) {
-        nav_name = nav_target.attr("href").replace("#", "");
+        nav_name = nav_target.attr("href");
+        if (!nav_name) {
+            nav_name = nav_target.find("a").attr("href");
+        }
+        if (!nav_name) {
+            return;
+        }
+        nav_name = nav_name.replace("#", "");
     }
 
     if (nav_name == l4i.urlevc) {
@@ -91,7 +98,6 @@ l4i.url_event_action = function(nav_target, auto_prev, call_func) {
     // $(this).closest("ul").find("a.active").removeClass("active");
     // $(this).addClass("active");
 
-    // nav_target
 
     // name = name.replace("#", "");
     // var name = location.hash.replace("#", "");
@@ -253,9 +259,30 @@ l4i.PosGet = function() {
 
 l4i.InnerAlert = function(obj, type, msg) {
     if (type == "") {
-        $(obj).hide();
+        $(obj).hide(200);
     } else {
-        $(obj).removeClass().addClass("alert " + type).html(msg).fadeOut(200).fadeIn(200);
+        var type_css = type;
+        switch (type) {
+            case "ok":
+                type_css = "alert-success";
+                break;
+
+            case "info":
+                type_css = "alert-primary";
+                break;
+
+            case "warn":
+                type_css = "alert-warning";
+                break;
+
+            case "error":
+                type_css = "alert-danger";
+                break;
+        }
+
+        $(obj).removeClass(function(i, className) {
+            return (className.match(/(^|\s)alert-\S+/g) || []).join(' ');
+        }).addClass(type_css).html(msg).fadeOut(200).fadeIn(200);
     }
 }
 
@@ -585,13 +612,13 @@ l4iModal.switch = function(modalid, cb) {
     }
 
     var firstload = false;
-    if (l4iModal.current == null) {
+    if (!l4iModal.current) {
 
         $("#l4i-modal").remove();
         $("body").append('<div id="l4i-modal">\
             <div class="less-modal-header" style="display:none">\
                 <span id="less-modal-header-title" class="title"></span>\
-                <button class="close" onclick="l4iModal.Close()">×</button>\
+                <span class="close" onclick="l4iModal.Close()">×</span>\
             </div>\
             <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
             <div class="less-modal-footer" style="display:none"><div>\
@@ -603,7 +630,7 @@ l4iModal.switch = function(modalid, cb) {
         $(".less-modal-footer").empty();
     }
 
-    if (options.title !== undefined) {
+    if (options.title) {
         $(".less-modal-header").css({
             "display": "block"
         });
@@ -655,7 +682,7 @@ l4iModal.switch = function(modalid, cb) {
                 body += source;
             }
 
-        } else if (options.tpluri !== undefined) {
+        } else if (options.tpluri) {
 
             if (/\?/.test(options.tpluri)) {
                 options.tpluri += "&_=";
@@ -700,7 +727,9 @@ l4iModal.switch = function(modalid, cb) {
     if (!$("#l4i-modal").is(':visible')) {
         $("#l4i-modal").css({
             "z-index": "-100"
-        }).show();
+        }).css({
+            "display": "block"
+        });
     }
 
     var bw = $(window).width(),
@@ -713,7 +742,7 @@ l4iModal.switch = function(modalid, cb) {
     }
 
     if (options.height && options.height == "max") {
-        options.height = bh - 100;
+        options.height = bh - 120;
     } else if (!options.height) {
         options.height = l4iModal.height;
     }
@@ -721,7 +750,9 @@ l4iModal.switch = function(modalid, cb) {
     options.width = parseInt(options.width);
     options.height = parseInt(options.height);
 
-    var inlet_height = $('.less-modal-header').outerHeight(true) + $('.less-modal-footer').outerHeight(true) + 10;
+    var hefoo_height = $(".less-modal-header").outerHeight(true);
+    hefoo_height += $(".less-modal-footer").outerHeight(true);
+
 
     if (options.width < 1) {
         options.width = $("#" + modalid).outerWidth(true);
@@ -730,7 +761,7 @@ l4iModal.switch = function(modalid, cb) {
         options.width = 200;
     }
     if (options.height < 1) {
-        options.height = $("#" + modalid).outerHeight(true) + inlet_height;
+        options.height = $("#" + modalid).outerHeight(true) + hefoo_height;
     }
     if (options.height < 100) {
         options.height = 100;
@@ -761,7 +792,21 @@ l4iModal.switch = function(modalid, cb) {
         "width": options.width + 'px',
     });
 
-    $(".less-modal-body").height(options.height - inlet_height);
+
+    options.inlet_width = options.width - 20;
+    options.inlet_height = options.height - hefoo_height - 20;
+
+    var body_margin = "10px";
+    if (buttons.length > 10) {
+        body_margin = "10px 10px 0 10px";
+        options.inlet_height += 10;
+    }
+
+    $(".less-modal-body").css({
+        "margin": body_margin,
+        "width": (options.inlet_width) + "px",
+        "height": (options.inlet_height) + "px",
+    });
 
     if (!$('#l4i-modal-bg').is(':visible')) {
         $("#l4i-modal-bg").remove();
@@ -769,11 +814,13 @@ l4iModal.switch = function(modalid, cb) {
         $("#l4i-modal-bg").fadeIn(150);
     }
 
+
     $("#" + modalid).css({
         "z-index": 1,
-        "width": $(".less-modal-body").width(), // options.width +"px",
-        "height": (options.height - inlet_height) + "px"
+        "width": options.inlet_width + "px", // options.width +"px",
+        "height": options.inlet_height + "px",
     });
+
 
     var pp = $("#" + modalid).position();
     var mov = pp.left;
@@ -793,7 +840,7 @@ l4iModal.switch = function(modalid, cb) {
             // options.success();
         });
 
-        if (options.title !== undefined) {
+        if (options.title) {
             $(".less-modal-header .title").text(options.title);
         }
 
@@ -907,7 +954,14 @@ l4iModal.Resize = function() {
     var h = $("#l4i-modal").height();
     var hh = $(".less-modal-header").outerHeight(true);
     var fh = $(".less-modal-footer").outerHeight(true);
-    lessModalBodyHeight = h - hh - fh - 10;
+    var lessModalBodyHeight = h - hh - fh - 20;
+    if (l4iModal.CurOptions.buttons && l4iModal.CurOptions.buttons.length > 0) {
+        lessModalBodyHeight += 10;
+    }
+    if (lessModalBodyHeight == l4iModal.CurOptions.inlet_height) {
+        return;
+    }
+    l4iModal.CurOptions.inlet_height = lessModalBodyHeight;
     $(".less-modal-body").height(lessModalBodyHeight);
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
@@ -1362,12 +1416,12 @@ l4iTemplate.Render = function(options) {
 
     } else if (options.tplurl !== undefined) {
 
-        if (/\?/.test(options.tpluri)) {
-            options.tpluri += "&_=";
+        if (/\?/.test(options.tplurl)) {
+            options.tplurl += "&_=";
         } else {
-            options.tpluri += "?_=";
+            options.tplurl += "?_=";
         }
-        options.tpluri += Math.random();
+        options.tplurl += Math.random();
 
         $.ajax({
             url: options.tplurl,

@@ -1,34 +1,48 @@
 #l4i-modal-bg {
     position: fixed; z-index: 1050;
     width: 100%; height: 100%; top: 0px; left: 0px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 #l4i-modal {
     z-index: 2000 !important;
     position: fixed;
     display: none;
-    padding: 10px;
     background-color: #fff;
     // border: 3px solid #777;
     // -moz-border-radius: 5px;
     // -webkit-border-radius: 5px;
     // border-radius: 5px;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.5);
 }
 #l4i-modal a {
     text-decoration: none;
 }
 .less-modal-header {
-    padding-bottom: 5px;
-    font-size: 16px; font-weight: bold; line-height:25px;
-    border-bottom: 1px ridge #aaa;
+    padding: 5px 10px;
+    height: 40px;
+    font-size: 16px; font-weight: bold; line-height: 30px;
+    color: #fff;
+    background-color: #343a40;
+	vertical-align: middle !important;
 }
+.less-modal-header .close {
+    float: right;
+    color: #fff;
+    opacity: 0.9;
+    text-shadow: none !important;
+    font-size: 22px; font-weight: bold; line-height: 30px;
+}
+.less-modal-header .close:hover {
+    opacity: 0.8;
+}
+
 #l4i-modal .title {
     padding:10px 0; margin-right:50px;
 }
 
 .less-modal-body {
     position: relative;
-    margin: 10px 0;
+    margin: 0;
     overflow: hidden;
     left: 0; right: 0;
     box-sizing: border-box;
@@ -46,13 +60,13 @@
 }
 .less-modal-footer {
     clear: both;
-    padding: 10px 0px;
+    padding: 10px;
+    height: 55px;
     text-align: right;
-    border-top: 1px solid #ddd;
     *zoom: 1;
     display: none;
     position: absolute;
-    bottom: 0; left: 10px; right: 10px;
+    bottom: 0; left: 0; right: 0;
 }
 .less-modal-footer:before,
 .less-modal-footer:after {
@@ -62,6 +76,11 @@
 }
 .less-modal-footer:after {
     clear: both;
+}
+.less-modal-footer .btn {
+    height: 35px !important;
+	line-height: 100% !important;
+	font-size: 18px !important;
 }
 .less-modal-footer .btn + .btn {
     margin-bottom: 0;
