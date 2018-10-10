@@ -267,7 +267,7 @@ l4i.PosGet = function() {
 }
 
 l4i.InnerAlert = function(obj, type, msg) {
-    if (type == "") {
+    if (!type || type == "") {
         $(obj).hide(200);
     } else {
         var type_css = type;
