@@ -23,6 +23,15 @@ $(document).ready(function() {
         l4i.UrlEventHandler($(this));
     });
 
+    $(document).keyup(function(e) {
+        if (e.key === "Escape") {
+            if (l4iModal.current) {
+                l4iModal.Close();
+            }
+        }
+    });
+
+
 // if (('onhashchange' in window) && ((typeof document.documentMode === 'undefined') || document.documentMode == 8)) {
 //     window.onhashchange = l4i.UrlEventHandler;
 // } else {
@@ -834,8 +843,9 @@ l4iModal.switch = function(modalid, cb) {
             "position": "fixed",
             "z-index": 200,
             "top": top + 'px',
-            "left": left + 'px'
-        }).hide().slideDown(100, function() {
+            "left": left + 'px',
+        // }).hide().slideDown(100, function() {
+        }).show(0, function() {
             // l4iModal.Resize();
             // options.success();
         });
@@ -974,12 +984,12 @@ l4iModal.Close = function(cb) {
         return;
     }
 
-    $("#l4i-modal").slideUp(100, function() {
+    $("#l4i-modal").hide(10, function() {
         l4iModal.data = {};
         l4iModal.current = null;
         l4iModal.CurOptions = null;
         $("#l4i-modal").remove();
-        $("#l4i-modal-bg").fadeOut(150, cb);
+        $("#l4i-modal-bg").fadeOut(200, cb);
     });
 }
 
