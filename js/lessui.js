@@ -751,7 +751,7 @@ l4iModal.switch = function(modalid, cb) {
     }
 
     if (options.height && options.height == "max") {
-        options.height = bh - 120;
+        options.height = bh - 100;
     } else if (!options.height) {
         options.height = l4iModal.height;
     }
@@ -948,7 +948,7 @@ l4iModal.buttonRender = function(buttons) {
 
         if (buttons[i].href) {
             str += "<a class='btn btn-small " + buttons[i].style
-                + "' href='" + buttons[i].href + "'>"
+                + "' href='" + buttons[i].href + "' target='_blank'>"
                 + buttons[i].title + "</a>";
         } else if (buttons[i].onclick) {
             str += "<button class='btn btn-small " + buttons[i].style
