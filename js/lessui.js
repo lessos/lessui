@@ -584,7 +584,7 @@ l4iModal.Open = function(options) {
 
     // $("#"+ modalid).remove();
 
-    if (!options.backEnable) {
+    if (options.backEnable !== false) {
         options.backEnable = true;
     }
 
