@@ -295,8 +295,32 @@ l4i.InnerAlert = function(obj, type, msg) {
     }
 }
 
+l4i.i18nStd = {
+    locale: "en",
+    items: {},
+};
+
+l4i.LangSync = function(items, lang) {
+    if (!items || items.length < 1) {
+        return;
+    }
+    if (!lang) {
+        lang = "en";
+    }
+    l4i.i18nStd.lang = lang;
+    for (var i in items) {
+        l4i.i18nStd.items[items[i].key] = items[i].val;
+    }
+}
+
 // TODO i18n
 l4i.T = function() {
+    if (arguments && arguments.length > 0) {
+        var text = l4i.i18nStd.items[arguments[0].toLowerCase().trim()];
+        if (text && text.length > 0) {
+            arguments[0] = text;
+        }
+    }
     return _sprintf.apply(this, arguments);
 }
 
@@ -596,7 +620,7 @@ l4iModal.Open = function(options) {
 
         options.buttons.unshift({
             onclick: "l4iModal.Prev()",
-            title: "Back",
+            title: l4i.T("Back"),
             style: "btn-primary less-pull-left"
         });
     }
