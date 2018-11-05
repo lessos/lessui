@@ -1,5 +1,5 @@
 #!/bin/bash
 
 lessc less/lessui.less > css/lessui.css
-lessc -x less/lessui.less > css/lessui.min.css
+# lessc -x less/lessui.less > css/lessui.min.css
 
