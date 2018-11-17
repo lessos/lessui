@@ -767,39 +767,61 @@ l4iModal.switch = function(modalid, cb) {
 
     var bw = $(window).width(),
         bh = $(window).height();
+    //
+    var hfh = $(".less-modal-header").outerHeight(true) + $(".less-modal-footer").outerHeight(true);
 
-    if (options.width && options.width == "max") {
-        options.width = bw - 100;
-    } else if (!options.width) {
+    //
+    if (!options.width_min) {
+        options.width_min = 400;
+    } else {
+        options.width_min = parseInt(options.width_min);
+        if (options.width_min < 400) {
+            options.width_min = 400;
+        }
+    }
+    if (!options.width && l4iModal.width) {
         options.width = l4iModal.width;
+    } else if (options.width == "max") {
+        options.width = 10000;
     }
-
-    if (options.height && options.height == "max") {
-        options.height = bh - 100;
-    } else if (!options.height) {
-        options.height = l4iModal.height;
-    }
-
     options.width = parseInt(options.width);
-    options.height = parseInt(options.height);
-
-    var hefoo_height = $(".less-modal-header").outerHeight(true);
-    hefoo_height += $(".less-modal-footer").outerHeight(true);
-
-
     if (options.width < 1) {
         options.width = $("#" + modalid).outerWidth(true);
     }
-    if (options.width < 200) {
-        options.width = 200;
+    if (options.width + 100 > bw) {
+        options.width = bw - 100;
     }
-    if (options.height < 1) {
-        options.height = $("#" + modalid).outerHeight(true) + hefoo_height;
-    }
-    if (options.height < 100) {
-        options.height = 100;
+    if (options.width < options.width_min) {
+        options.width = options.width_min;
     }
 
+    //
+    if (!options.height_min) {
+        options.height_min = 100;
+    } else {
+        options.height_min = parseInt(options.height_min);
+        if (options.height_min < 100) {
+            options.height_min = 100;
+        }
+    }
+    if (!options.height && l4iModal.height) {
+        options.height = l4iModal.height;
+    } else if (options.height == "max") {
+        options.height = 2000;
+    }
+    options.height = parseInt(options.height);
+    if (options.height < 100) {
+        options.height = $("#" + modalid).outerHeight(true) + hfh;
+    }
+    if (options.height + 100 > bh) {
+        options.height = bh - 100;
+    }
+    if (options.height < options.height_min) {
+        options.height = options.height_min;
+    }
+    // console.log("width " + options.width + ", min " + options.width_min);
+
+    //
     var top = 0,
         left = 0;
 
@@ -827,7 +849,7 @@ l4iModal.switch = function(modalid, cb) {
 
 
     options.inlet_width = options.width - 20;
-    options.inlet_height = options.height - hefoo_height - 20;
+    options.inlet_height = options.height - hfh - 20;
 
     var body_margin = "10px";
     if (buttons.length > 10) {
@@ -1380,6 +1402,8 @@ l4iTemplate.Render = function(options) {
                 $("#" + options.dstid).prepend(tempFn(options.data));
             } else if (options.append) {
                 $("#" + options.dstid).append(tempFn(options.data));
+            } else if (options.afterAppend) {
+                $("#" + options.dstid).append(tempFn(options.data));
             } else {
                 $("#" + options.dstid).html(tempFn(options.data));
             }
@@ -1389,6 +1413,8 @@ l4iTemplate.Render = function(options) {
                 $("#" + options.dstid).prepend(options.tplsrc);
             } else if (options.append) {
                 $("#" + options.dstid).append(options.tplsrc);
+            } else if (options.afterAppend) {
+                $("#" + options.dstid).after(options.tplsrc);
             } else {
                 $("#" + options.dstid).html(options.tplsrc);
             }
@@ -1427,6 +1453,8 @@ l4iTemplate.Render = function(options) {
                 $("#" + options.dstid).prepend(tempFn(options.data));
             } else if (options.append) {
                 $("#" + options.dstid).append(tempFn(options.data));
+            } else if (options.afterAppend) {
+                $("#" + options.dstid).after(tempFn(options.data));
             } else {
                 $("#" + options.dstid).html(tempFn(options.data));
             }
@@ -1437,6 +1465,8 @@ l4iTemplate.Render = function(options) {
                 $("#" + options.dstid).prepend(source);
             } else if (options.append) {
                 $("#" + options.dstid).append(source);
+            } else if (options.afterAppend) {
+                $("#" + options.dstid).after(source);
             } else {
                 $("#" + options.dstid).html(source);
             }
@@ -1473,6 +1503,8 @@ l4iTemplate.Render = function(options) {
                         $("#" + options.dstid).prepend(tempFn(options.data));
                     } else if (options.append) {
                         $("#" + options.dstid).append(tempFn(options.data));
+                    } else if (options.afterAppend) {
+                        $("#" + options.dstid).after(tempFn(options.data));
                     } else {
                         $("#" + options.dstid).html(tempFn(options.data));
                     }
@@ -1482,6 +1514,8 @@ l4iTemplate.Render = function(options) {
                         $("#" + options.dstid).prepend(rsp);
                     } else if (options.append) {
                         $("#" + options.dstid).append(rsp);
+                    } else if (options.afterAppend) {
+                        $("#" + options.dstid).after(rsp);
                     } else {
                         $("#" + options.dstid).html(rsp);
                     }
