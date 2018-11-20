@@ -267,8 +267,12 @@ l4i.PosGet = function() {
 }
 
 l4i.InnerAlert = function(obj, type, msg) {
+    var elem = $(obj);
+    if (!elem) {
+        return;
+    }
     if (!type || type == "") {
-        $(obj).hide(200);
+        elem.hide(200);
     } else {
         var type_css = type;
         switch (type) {
@@ -289,7 +293,11 @@ l4i.InnerAlert = function(obj, type, msg) {
                 break;
         }
 
-        $(obj).removeClass(function(i, className) {
+        if (!elem.hasClass("alert")) {
+            type_css = "alert " + type_css;
+        }
+
+        elem.removeClass(function(i, className) {
             return (className.match(/(^|\s)alert-\S+/g) || []).join(' ');
         }).addClass(type_css).html(msg).fadeOut(200).fadeIn(200);
     }
@@ -654,7 +662,8 @@ l4iModal.switch = function(modalid, cb) {
                 <span class="close" onclick="l4iModal.Close()">×</span>\
             </div>\
             <div class="less-modal-body"><div id="less-modal-body-page" class="less-modal-body-page"></div></div>\
-            <div class="less-modal-footer" style="display:none"><div>\
+            <div id="less-modal-footer-alert" style="display:none"></div>\
+            <div id="less-modal-footer" class="less-modal-footer" style="display:none"></div>\
             </div>');
 
         firstload = true;
@@ -1021,6 +1030,64 @@ l4iModal.Resize = function() {
     $(".less-modal-body").height(lessModalBodyHeight);
     $(".less-modal-body-pagelet").height(lessModalBodyHeight);
 }
+
+
+l4iModal.FootAlert = function(type, msg, time_close) {
+
+    var timems = 200;
+    if (time_close) {
+        if (time_close < 1000) {
+            time_close = 1000;
+        }
+    }
+    var elem = $("#less-modal-footer-alert");
+    if (!elem) {
+        return;
+    }
+    if (!type || type == "") {
+        elem.hide(timems);
+    } else {
+        $("#less-modal-footer").slideUp(timems);
+        var type_css = type;
+        switch (type) {
+            case "ok":
+                type_css = "alert-success";
+                break;
+
+            case "info":
+                type_css = "alert-primary";
+                break;
+
+            case "warn":
+                type_css = "alert-warning";
+                break;
+
+            case "error":
+                type_css = "alert-danger";
+                break;
+
+            default:
+                type_css = "alert-primary";
+                break;
+        }
+
+        if (!elem.hasClass("alert")) {
+            type_css = "alert " + type_css;
+        }
+
+        elem.removeClass(function(i, className) {
+            return (className.match(/(^|\s)alert-\S+/g) || []).join(' ');
+        }).addClass(type_css).html(msg).slideDown(timems);
+        if (!time_close) {
+            return;
+        }
+        setTimeout(function() {
+            $("#less-modal-footer-alert").slideUp(timems);
+            $("#less-modal-footer").slideDown(timems);
+        }, time_close);
+    }
+}
+
 
 l4iModal.Close = function(cb) {
     if (!l4iModal.current) {

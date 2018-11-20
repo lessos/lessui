@@ -213,6 +213,17 @@ body {
 .less-modal-footer .btn-block + .btn-block {
   margin-left: 0;
 }
+#less-modal-footer-alert {
+  clear: both;
+  border: 0px;
+  border-radius: 0px;
+  margin: 0;
+  padding: calc(0.25rem + 10px);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 .less_tagbox {
   position: relative;
   border: 1px solid #ddd;
