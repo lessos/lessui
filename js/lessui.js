@@ -26,7 +26,12 @@ $(document).ready(function() {
     $(document).keyup(function(e) {
         if (e.key === "Escape") {
             if (l4iModal.current) {
-                l4iModal.Close();
+                var pid = l4iModal.PrevId();
+                if (pid) {
+                    l4iModal.Prev();
+                } else {
+                    l4iModal.Close();
+                }
             }
         }
     });
