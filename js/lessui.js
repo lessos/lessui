@@ -1003,7 +1003,7 @@ l4iModal.buttonRender = function(buttons) {
         }
 
         if (!buttons[i].style) {
-            buttons[i].style = "btn-default";
+            buttons[i].style = "btn-primary";
         }
 
         if (buttons[i].href) {
