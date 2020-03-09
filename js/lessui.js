@@ -634,7 +634,7 @@ l4iModal.Open = function(options) {
         options.buttons.unshift({
             onclick: "l4iModal.Prev()",
             title: l4i.T("Back"),
-            style: "btn-primary less-pull-left"
+            style: "button is-dark btn-primary less-pull-left"
         });
     }
 
@@ -780,17 +780,18 @@ l4iModal.switch = function(modalid, cb) {
     }
 
     var bw = $(window).width(),
-        bh = $(window).height();
-    //
-    var hfh = $(".less-modal-header").outerHeight(true) + $(".less-modal-footer").outerHeight(true);
+        bh = $(window).height(),
+        mh = $("#" + modalid).outerHeight(true),
+        mhh = $(".less-modal-header").outerHeight(true),
+        mfh = $(".less-modal-footer").outerHeight(true);
 
     //
     if (!options.width_min) {
-        options.width_min = 400;
+        options.width_min = 200;
     } else {
         options.width_min = parseInt(options.width_min);
-        if (options.width_min < 400) {
-            options.width_min = 400;
+        if (options.width_min < 200) {
+            options.width_min = 200;
         }
     }
     if (!options.width && l4iModal.width) {
@@ -820,12 +821,15 @@ l4iModal.switch = function(modalid, cb) {
     }
     if (!options.height && l4iModal.height) {
         options.height = l4iModal.height;
+    } else if (options.height == "auto") {
+        options.height = mh + mhh + mfh + 10;
     } else if (options.height == "max") {
         options.height = 2000;
     }
     options.height = parseInt(options.height);
+    console.log(options.height);
     if (options.height < 100) {
-        options.height = $("#" + modalid).outerHeight(true) + hfh;
+        options.height = mh + mhh + mfh;
     }
     if (options.height + 100 > bh) {
         options.height = bh - 100;
@@ -846,8 +850,8 @@ l4iModal.switch = function(modalid, cb) {
         var p = l4i.PosGet();
         top = p.top - 10, left = p.left - 10;
     }
-    if (left > (bw - options.width)) {
-        left = bw - options.width;
+    if (left > (bw - options.width - 10)) {
+        left = bw - options.width - 10;
     }
     if ((top + options.height + 40) > bh) {
         top = bh - options.height - 40;
@@ -863,7 +867,7 @@ l4iModal.switch = function(modalid, cb) {
 
 
     options.inlet_width = options.width - 20;
-    options.inlet_height = options.height - hfh - 20;
+    options.inlet_height = options.height - mhh - mfh - 20;
 
     var body_margin = "10px";
     if (buttons.length > 10) {
@@ -1003,15 +1007,15 @@ l4iModal.buttonRender = function(buttons) {
         }
 
         if (!buttons[i].style) {
-            buttons[i].style = "btn-primary";
+            buttons[i].style = "button is-dark btn-primary";
         }
 
         if (buttons[i].href) {
-            str += "<a class='btn btn-small " + buttons[i].style
+            str += "<a class='button is-small btn btn-small " + buttons[i].style
                 + "' href='" + buttons[i].href + "' target='_blank'>"
                 + buttons[i].title + "</a>";
         } else if (buttons[i].onclick) {
-            str += "<button class='btn btn-small " + buttons[i].style
+            str += "<button class='button is-small btn btn-small " + buttons[i].style
                 + "' onclick='" + buttons[i].onclick + "'>"
                 + buttons[i].title + "</button>";
         }

@@ -75,6 +75,9 @@
 #l4i-modal .title {
   padding: 10px 0;
   margin-right: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
 }
 .less-modal-body {
   position: relative;
