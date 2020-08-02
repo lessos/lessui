@@ -827,7 +827,7 @@ l4iModal.switch = function(modalid, cb) {
         options.height = 2000;
     }
     options.height = parseInt(options.height);
-    console.log(options.height);
+    // console.log(options.height);
     if (options.height < 100) {
         options.height = mh + mhh + mfh;
     }
@@ -848,7 +848,12 @@ l4iModal.switch = function(modalid, cb) {
         top = bh / 2 - options.height / 2;
     } else {
         var p = l4i.PosGet();
-        top = p.top - 10, left = p.left - 10;
+        if ((p.left / bw) > 0.66 && options.width < bw) {
+            left = p.left - options.width + 10;
+        } else {
+            left = p.left - 10;
+        }
+        top = p.top - 10;
     }
     if (left > (bw - options.width - 10)) {
         left = bw - options.width - 10;
