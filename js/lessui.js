@@ -1037,7 +1037,7 @@ l4iModal.Resize = function() {
 }
 
 
-l4iModal.FootAlert = function(type, msg, time_close) {
+l4iModal.FootAlert = function(type, msg, time_close, tplid) {
 
     var timems = 200;
     if (time_close) {
@@ -1045,14 +1045,15 @@ l4iModal.FootAlert = function(type, msg, time_close) {
             time_close = 1000;
         }
     }
-    var elem = $("#less-modal-footer-alert");
+    tplid = tplid ? tplid : "less-modal-footer";
+    var elem = $("#" + tplid + "-alert");
     if (!elem) {
         return;
     }
     if (!type || type == "") {
         elem.hide(timems);
     } else {
-        $("#less-modal-footer").slideUp(timems);
+        $("#" + tplid).slideUp(timems);
         var type_css = type;
         switch (type) {
             case "ok":
@@ -1087,8 +1088,8 @@ l4iModal.FootAlert = function(type, msg, time_close) {
             return;
         }
         setTimeout(function() {
-            $("#less-modal-footer-alert").slideUp(timems);
-            $("#less-modal-footer").slideDown(timems);
+            $("#" + tplid + "-alert").slideUp(timems);
+            $("#" + tplid).slideDown(timems);
         }, time_close);
     }
 }
