@@ -634,7 +634,7 @@ l4iModal.Open = function(options) {
         options.buttons.unshift({
             onclick: "l4iModal.Prev()",
             title: l4i.T("Back"),
-            style: "button is-dark btn-primary less-pull-left"
+            style: "button is-dark btn-dark less-pull-left"
         });
     }
 
@@ -1012,7 +1012,7 @@ l4iModal.buttonRender = function(buttons) {
         }
 
         if (!buttons[i].style) {
-            buttons[i].style = "button is-dark btn-primary";
+            buttons[i].style = "button is-dark btn-dark";
         }
 
         if (buttons[i].href) {
